@@ -1,19 +1,15 @@
-# get required info from user
-  # loan amount X
-  # APR
-  # loan duration
-
 def valid_loan?(num)
   num == num.to_i.to_s
 end
 
 def valid_apr?(num)
-  (num == num.to_f.to_s) || (num == num.to_i.to_s)
+  ((num == num.to_f.to_s) || (num == num.to_i.to_s))
 end
 
 def valid_duration?(num)
   num == num.to_i.to_s
 end
+
 # Gather loan amount
 amount = ''
 loop do 
@@ -61,3 +57,12 @@ loop do
     puts "Invalid Duration."
   end
 end
+
+# Calculate payment
+# Convert APR
+monthly_rate = apr.to_f / 1200
+payment = amount.to_i * (monthly_rate / (1 - (1 + monthly_rate)**(-duration_months.to_i)))
+
+# Output result
+print "The monthly payment for a $#{amount}, #{duration_months} month loan @ #{apr}% is: "
+puts "%.2f" % payment
