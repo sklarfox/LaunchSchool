@@ -64,5 +64,6 @@ monthly_rate = apr.to_f / 1200
 payment = amount.to_i * (monthly_rate / (1 - (1 + monthly_rate)**(-duration_months.to_i)))
 
 # Output result
+puts ''
 print "The monthly payment for a $#{amount}, #{duration_months} month loan @ #{apr}% is: "
-puts "%.2f" % payment
+puts "$%.2f" % payment
