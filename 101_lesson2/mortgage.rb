@@ -1,3 +1,11 @@
+# Things I could fix
+  # change months to years, convert to months on back end
+  # change formatting of final output, get rubocop to hush
+  # probably some other stuff
+  # Move user messages out to a separate file
+
+system("clear")
+
 def valid_loan?(num)
   num == num.to_i.to_s && num.to_i > 0
 end
@@ -11,7 +19,6 @@ def valid_duration?(num)
 end
 
 # Welcome center
-puts ''
 puts "Welcome to the Mortgage Calculator!"
 puts ''
 
@@ -19,7 +26,7 @@ puts ''
 loop do
   # Gather loan amount
   amount = ''
-  loop do 
+  loop do
     print "Please input loan amount: "
     amount = gets.chomp
 
@@ -49,16 +56,14 @@ loop do
     print "Please input loan duration in months: "
     duration_months = gets.chomp
 
-
     # Check for valid duration
     if valid_duration?(duration_months)
       # Ask for user verification of any value less than 12
       if duration_months.to_i < 12
-        print "Usage: duration in months. Verify loan duration is #{duration_months} months: "
-          verify = gets.chomp
-          next unless verify.downcase.start_with? == 'y'
+        print "Verify loan duration is #{duration_months} months: "
+        verify = gets.chomp
+        next unless verify.downcase.start_with? == 'y'
       end
-        
       break
     else
       puts "Invalid Duration."
