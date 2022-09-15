@@ -5,19 +5,17 @@ def test_method(string)
 end
 
 def display_result(player, computer)
-  if (player == 'rock' && computer == 'scissors') ||
-     (player == 'paper' && computer == 'rock') ||
-     (player == 'scissors' && computer == 'paper')
-    prompt "You won!"
-  elsif (player == 'rock' && computer == 'paper') ||
-        (player == 'paper' && computer == 'scissors') ||
-        (player == 'scissors' && computer == 'rock')
+  # Rotates the choices table to align with player choice at index 0
+  winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
+
+  if winning_table.find_index(computer) == 0
+    prompt "It's a tie!"
+  elsif winning_table.find_index(computer) == 1
     prompt "Computer won!"
   else
-    prompt "It's a tie!"
+    prompt "You won!"
   end
 end
-
 
 def prompt(message)
   puts("=> #{message}")
@@ -49,8 +47,3 @@ loop do
 end
 
 prompt "Thank you for playing. Good bye!"
-
-
-# Rock Paper Scissors Logic
-# Generate answer key array based off user choice
-#   player chooses Rock
