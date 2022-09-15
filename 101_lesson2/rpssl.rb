@@ -1,13 +1,9 @@
 VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"]
 VALID_ABRV = { 'r' => 'rock',
-              'p' => 'paper',
-              'sc' => 'scissors',
-              'sp' => 'spock',
-              'l' => 'lizard' }
-
-def test_method(string)
-  prompt string
-end
+               'p' => 'paper',
+               'sc' => 'scissors',
+               'sp' => 'spock',
+               'l' => 'lizard' }
 
 def display_result(player, computer)
   # Rotates the choices table to align with player choice at index 0
@@ -28,12 +24,12 @@ def return_winner(player, computer)
   winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
 
   if winning_table.find_index(computer) == 0
-    return :tie
+    :tie
   elsif winning_table.find_index(computer) == 1 ||
         winning_table.find_index(computer) == 3
-    return :compy386
+    :compy386
   else
-    return :player
+    :player
   end
 end
 
@@ -43,7 +39,7 @@ end
 
 def display_choices
   print "=> Choose one: "
-  VALID_ABRV.each {|key, value| print "#{value}(#{key}) "}
+  VALID_ABRV.each { |key, value| print "#{value}(#{key}) " }
   puts "\n"
 end
 
@@ -53,9 +49,9 @@ end
 
 def standardize_choice(input)
   if VALID_ABRV.include?(input)
-    return VALID_ABRV[input]
+    VALID_ABRV[input]
   else
-    return input
+    input
   end
 end
 
@@ -83,20 +79,18 @@ def display_rules
   system('clear')
   rules = <<-MSG
  Scissors cuts Paper
-    Paper covers Rock
-    Rock crushes Lizard
-    Lizard poisons Spock
-    Spock smashes Scissors
+    Paper covers Rock\n    Rock crushes Lizard
+    Lizard poisons Spock\n    Spock smashes Scissors
     Scissors decapitates Lizard
     Lizard eats Paper
     Paper disproves Spock
     Spock vaporizes Rock
     Rock (as it always has) crushes Scissors
-    
+
     Enter any key to continue
     MSG
   prompt rules
-  exit = gets.chomp
+  gets.chomp
 end
 
 system('clear')
@@ -106,13 +100,12 @@ name_sym = name.downcase.to_sym
 # Program loop
 loop do
   # Single game loop, until winner
-  scoreboard = {name_sym => 0, compy386: 0}
+  scoreboard = { name_sym => 0, :compy386 => 0 }
 
   loop do
-
     choice = ''
 
-    loop do   # Collect user input loop
+    loop do # Collect user input loop
       display_choices()
       choice = gets.chomp.downcase
 
@@ -135,7 +128,7 @@ loop do
     scoreboard[winner] += 1 unless winner == :tie
     display_score(scoreboard)
 
-    if scoreboard.has_value?(3)
+    if scoreboard.value?(3)
       overall = scoreboard.key(3)
       prompt "The winner of the game is #{overall.to_s.capitalize}!\n\n"
       break
