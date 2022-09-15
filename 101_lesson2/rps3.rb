@@ -1,4 +1,9 @@
 VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"]
+VALID_ABRV = { 'r' => 'rock',
+              'p' => 'paper',
+              'sc' => 'scissors',
+              'sp' => 'spock',
+              'l' => 'lizard' }
 
 def test_method(string)
   prompt string
@@ -21,13 +26,32 @@ def prompt(message)
   puts("=> #{message}")
 end
 
+def display_choices
+# TODO
+end
+
+def valid_choice?(input)
+  (VALID_CHOICES.include?(input) || VALID_ABRV.include?(input))
+end
+
+def standardize_choice(input)
+  if VALID_ABRV.include?(input)
+    return VALID_ABRV[input]
+  else
+    return input
+  end
+end
+
+# Main game loop
 loop do
   choice = ''
-  loop do
+  loop do   # Collect user input loop
+    # TODO display_choices() to include abrv
     prompt "Choose one: #{VALID_CHOICES.join(', ')}"
-    choice = gets.chomp
+    choice = gets.chomp.downcase
 
-    if VALID_CHOICES.include?(choice)
+    if valid_choice?(choice)
+      choice = standardize_choice(choice)  # TODO Cleanup? This is probably ugly code
       break
     else
       prompt "That is not a valid choice."
