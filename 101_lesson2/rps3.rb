@@ -28,10 +28,10 @@ def return_winner(player, computer)
   winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
 
   if winning_table.find_index(computer) == 0
-    return :ties
+    return :tie
   elsif winning_table.find_index(computer) == 1 ||
         winning_table.find_index(computer) == 3
-    return :computer
+    return :compy386
   else
     return :player
   end
@@ -60,7 +60,7 @@ end
 def display_score(hash) # This is probably ugly formatting. TODO use the formatted blocky thing
   prompt "Scoreboard:"
   print "  | "
-  hash.each { |key, value| print "#{key}: #{value} | " }
+  hash.each { |key, value| print "#{key.capitalize}: #{value} | " }
   puts "\n\n"
 end
 
@@ -82,11 +82,12 @@ end
 
 system('clear')
 name = welcome_user()
+name_sym = name.downcase.to_sym
 
 # Program loop
 loop do
   # Single game loop, until winner
-  scoreboard = {name.to_sym: 0, computer: 0, ties: 0}
+  scoreboard = {name_sym => 0, compy386: 0}
 
   loop do
 
@@ -108,16 +109,17 @@ loop do
 
     computer_choice = VALID_CHOICES.sample
 
-    prompt "You chose: #{choice}; Computer chose: #{computer_choice}\n\n"
+    prompt "You chose: #{choice}; Compy386 chose: #{computer_choice}\n\n"
 
     display_result(choice, computer_choice)
     winner = return_winner(choice, computer_choice)
-    scoreboard[winner] += 1
+    winner = name_sym if winner == :player
+    scoreboard[winner] += 1 unless winner == :tie
     display_score(scoreboard)
 
     if scoreboard.has_value?(3)
       overall = scoreboard.key(3)
-      prompt "The winner of the game is the #{overall.to_s}!\n\n"
+      prompt "The winner of the game is #{overall.to_s.capitalize}!\n\n"
       break
     end
   end
