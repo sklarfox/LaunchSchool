@@ -64,42 +64,62 @@ def display_score(hash) # This is probably ugly formatting. TODO use the formatt
   puts "\n\n"
 end
 
-# Main game, until winner
+def welcome_user
+  prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
+  prompt "What is your name?"
+  name = gets.chomp
+  prompt "Welcome #{name}! Would you like to hear the rules? (y/n)"
+  choice = gets.chomp
+  if choice.downcase.start_with?('y')
+    display_rules
+  end
+  name
+end
+
 system('clear')
-scoreboard = {player: 0, computer: 0, ties: 0}
+name = welcome_user()
 
+# Program loop
 loop do
+  # Single game loop, until winner
+  scoreboard = {player: 0, computer: 0, ties: 0}
 
-  choice = ''
+  loop do
 
-  loop do   # Collect user input loop
-    # TODO display_choices() to include abrv
-    prompt "Choose one: #{VALID_CHOICES.join(', ')}"
-    choice = gets.chomp.downcase
+    choice = ''
 
-    if valid_choice?(choice)
-      choice = standardize_choice(choice)  # TODO Cleanup? This is probably ugly code
-      system('clear')
+    loop do   # Collect user input loop
+      # TODO display_choices() to include abrv
+      prompt "Choose one: #{VALID_CHOICES.join(', ')}"
+      choice = gets.chomp.downcase
+
+      if valid_choice?(choice)
+        choice = standardize_choice(choice)  # TODO Cleanup? This is probably ugly code, omit new lines?
+        system('clear')
+        break
+      else
+        prompt "That is not a valid choice."
+      end
+    end
+
+    computer_choice = VALID_CHOICES.sample
+
+    prompt "You chose: #{choice}; Computer chose: #{computer_choice}\n\n"
+
+    display_result(choice, computer_choice)
+    winner = return_winner(choice, computer_choice)
+    scoreboard[winner] += 1
+    display_score(scoreboard)
+
+    if scoreboard.has_value?(3)
+      overall = scoreboard.key(3)
+      prompt "The winner of the game is the #{overall.to_s}!\n\n"
       break
-    else
-      prompt "That is not a valid choice."
     end
   end
 
-  computer_choice = VALID_CHOICES.sample
-
-  prompt "You chose: #{choice}; Computer chose: #{computer_choice}\n\n"
-
-  display_result(choice, computer_choice)
-  winner = return_winner(choice, computer_choice)
-  scoreboard[winner] += 1
-  display_score(scoreboard)
-
-  if scoreboard.has_value?(3)
-    overall = scoreboard.key(3)
-    prompt "The winner of the game is the #{overall.to_s}!"
-    break
-  end
+  prompt "Would you like to play again? (y/n)"
+  choice = gets.chomp
+  break unless choice.downcase.start_with?('y')
 end
-
 prompt "Thank you for playing. Good bye!"
