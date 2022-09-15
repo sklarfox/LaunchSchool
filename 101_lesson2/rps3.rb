@@ -59,7 +59,7 @@ def standardize_choice(input)
   end
 end
 
-def display_score(hash) # This is probably ugly formatting. TODO use the formatted blocky thing
+def display_score(hash)
   prompt "Scoreboard:"
   print "  | "
   hash.each { |key, value| print "#{key.capitalize}: #{value} | " }
@@ -80,7 +80,23 @@ def welcome_user
 end
 
 def display_rules
-  # TODO
+  system('clear')
+  rules = <<-MSG
+ Scissors cuts Paper
+    Paper covers Rock
+    Rock crushes Lizard
+    Lizard poisons Spock
+    Spock smashes Scissors
+    Scissors decapitates Lizard
+    Lizard eats Paper
+    Paper disproves Spock
+    Spock vaporizes Rock
+    Rock (as it always has) crushes Scissors
+    
+    Enter any key to continue
+    MSG
+  prompt rules
+  exit = gets.chomp
 end
 
 system('clear')
@@ -101,7 +117,7 @@ loop do
       choice = gets.chomp.downcase
 
       if valid_choice?(choice)
-        choice = standardize_choice(choice)  # TODO Cleanup? This is probably ugly code, omit new lines?
+        choice = standardize_choice(choice)
         system('clear')
         break
       else
