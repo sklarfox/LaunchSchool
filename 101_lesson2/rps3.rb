@@ -71,9 +71,13 @@ def welcome_user
   prompt "Welcome #{name}! Would you like to hear the rules? (y/n)"
   choice = gets.chomp
   if choice.downcase.start_with?('y')
-    display_rules
+    display_rules()
   end
   name
+end
+
+def display_rules
+  # TODO
 end
 
 system('clear')
@@ -82,7 +86,7 @@ name = welcome_user()
 # Program loop
 loop do
   # Single game loop, until winner
-  scoreboard = {player: 0, computer: 0, ties: 0}
+  scoreboard = {name.to_sym: 0, computer: 0, ties: 0}
 
   loop do
 
@@ -118,8 +122,10 @@ loop do
     end
   end
 
+  # Decide if new game will be played
   prompt "Would you like to play again? (y/n)"
   choice = gets.chomp
   break unless choice.downcase.start_with?('y')
+  system('clear')
 end
-prompt "Thank you for playing. Good bye!"
+prompt "Thank you for playing #{name}. Good bye!"
