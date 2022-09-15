@@ -42,7 +42,9 @@ def prompt(message)
 end
 
 def display_choices
-# TODO
+  print "=> Choose one: "
+  VALID_ABRV.each {|key, value| print "#{value}(#{key}) "}
+  puts "\n"
 end
 
 def valid_choice?(input)
@@ -66,6 +68,7 @@ end
 
 def welcome_user
   prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
+  prompt "You will be playing against a state of the art computer, Compy386"
   prompt "What is your name?"
   name = gets.chomp
   prompt "Welcome #{name}! Would you like to hear the rules? (y/n)"
@@ -94,8 +97,7 @@ loop do
     choice = ''
 
     loop do   # Collect user input loop
-      # TODO display_choices() to include abrv
-      prompt "Choose one: #{VALID_CHOICES.join(', ')}"
+      display_choices()
       choice = gets.chomp.downcase
 
       if valid_choice?(choice)
