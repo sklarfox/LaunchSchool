@@ -1,8 +1,9 @@
 require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
+LANGUAGE = 'en'
 
 def prompt(message)
-  puts "=> #{message}"
+  puts "=> #{MESSAGES[LANGUAGE][message]}"
 end
 
 def valid_number?(num)
@@ -21,32 +22,32 @@ def operation_to_message(op)
   selection = ''
   case op
   when '1'
-    selection = (MESSAGES['adding'])
+    selection = messages('adding')
   when '2'
-    selection = (MESSAGES['subtracting'])
+    selection = messages('subtracting')
   when '3'
-    selection = (MESSAGES['multiplying'])
+    selection = messages('multiplying')
   when '4'
-    selection = (MESSAGES['dividing'])
+    selection = messages('dividing')
   end
   selection
 end
 
 system('clear')
 
-def messages(message, lang='en')
-  MESSAGES[lang][message]
+def messages(message)
+  MESSAGES[LANGUAGE][message]
 end
 
 # Welcome user
-prompt (MESSAGES['welcome'])
+prompt ('welcome')
 
 name = ''
 loop do
   name = gets.chomp
 
   if name.empty?
-    prompt (MESSAGES['name'])
+    prompt ('name')
   else
     break
   end
@@ -58,29 +59,29 @@ loop do
 
   # Collect first digit
   loop do
-    prompt (MESSAGES['first_num'])
+    prompt ('first_num')
     digit1 = gets.chomp
 
     if valid_number?(digit1)
       break
     else
-      prompt (MESSAGES['invalid_num'])
+      prompt ('invalid_num')
     end
   end
 
   # Collect second digit
   digit2 = ''
   loop do
-    prompt (MESSAGES['second_num'])
+    prompt ('second_num')
     digit2 = gets.chomp
     if valid_number?(digit2)
       break
     else
-      prompt (MESSAGES['invalid_num'])
+      prompt ('invalid_num')
     end
   end
 
-  prompt (MESSAGES['operator_prompt'])
+  prompt ('operator_prompt')
 
   # Collect operator
   operator = ''
@@ -90,11 +91,11 @@ loop do
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt (MESSAGES['must_choose'])
+      prompt ('must_choose')
     end
   end
 
-  prompt operation_to_message(operator) + MESSAGES['the_two_numbers']
+  prompt "#{operation_to_message(operator)} #{messages('the_two_numbers')}"
   sleep 1
 
   # Calculate result
@@ -110,15 +111,15 @@ loop do
           end
 
   # Give result
-  prompt MESSAGES['result'] + result.to_s
+  prompt 'result' + result.to_s
   sleep 1
 
   # Ask for another calculation
-  prompt MESSAGES['again']
+  prompt 'again'
   answer = gets.chomp
   break unless answer.downcase == 'y' || answer.downcase == 'yes'
   system('clear')
 end
 
 # Thank user
-prompt MESSAGES['thanks_1'] + name + MESSAGES['thanks_2']
+prompt "#{messages('thanks_1')} #{name} #{messages('thanks_2')}"
