@@ -15,10 +15,10 @@ en:
   subtracting: 'Subtracting'
   multiplying: 'Multiplying'
   dividing: 'Dividing'
-  result: 'The result is '
-  the_two_numbers: ' the two numbers...'
+  result: 'The result is'
+  the_two_numbers: 'the two numbers...'
   thanks_1: "Thank you for using the calculator, "
   thanks_2: '. Goodbye!'
-  again: 'Do you want to perform another calculation? (Y to calculate again)'
+  again: 'Do you want to perform another calculation? (y/n to calculate again)'
 
 de:

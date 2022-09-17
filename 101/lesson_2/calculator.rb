@@ -2,8 +2,13 @@ require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
 LANGUAGE = 'en'
 
-def prompt(message)
-  puts "=> #{MESSAGES[LANGUAGE][message]}"
+def prompt(key)
+  message = messages(key, LANGUAGE)
+  puts "=> #{message}"
+end
+
+def messages(message, lang='en')
+  MESSAGES[lang][message]
 end
 
 def valid_number?(num)
@@ -35,9 +40,6 @@ end
 
 system('clear')
 
-def messages(message)
-  MESSAGES[LANGUAGE][message]
-end
 
 # Welcome user
 prompt ('welcome')
@@ -95,7 +97,8 @@ loop do
     end
   end
 
-  prompt "#{operation_to_message(operator)} #{messages('the_two_numbers')}"
+  #TODO refactor prompt method to allow for multiple inputs?
+  puts  "#{operation_to_message(operator)} #{messages('the_two_numbers')}"
   sleep 1
 
   # Calculate result
@@ -111,7 +114,7 @@ loop do
           end
 
   # Give result
-  prompt 'result' + result.to_s
+  puts "=> #{messages('result')} #{result}"
   sleep 1
 
   # Ask for another calculation
