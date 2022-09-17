@@ -1,7 +1,7 @@
 en:
   welcome: "Welcome to Calculator! Enter your name: "
   name: "Make sure to use a valid name."
-  invalid_num: "Hmm... that doesn't look like a valid number"
+  invalid_num: "Hmm... that doesn't look like a valid number."
   first_num: "What's the first number?"
   second_num: "What's the second number?"
   operator_prompt:
@@ -17,8 +17,29 @@ en:
   dividing: 'Dividing'
   result: 'The result is'
   the_two_numbers: 'the two numbers...'
-  thanks_1: "Thank you for using the calculator, "
+  thanks_1: "Thank you for using Calculator,"
   thanks_2: '. Goodbye!'
-  again: 'Do you want to perform another calculation? (y/n to calculate again)'
+  again: 'Do you want to perform another calculation? (y/n)'
 
 de:
+  welcome: "Willkommen beim Rechner! Gib deinen Namen ein: "
+  name: "Stellen Sie sicher, dass Sie einen gültigen Namen verwenden."
+  invalid_num: "Hmm... das sieht nicht nach einer gültigen Nummer aus."
+  first_num: "Was ist die erste Zahl?"
+  second_num: "Was ist die erste Zahl?"
+  operator_prompt:
+    "Welche Operation möchten Sie durchführen?\n
+    1) hinzufügen\n
+    2) subtrahieren\n
+    3) multiplizieren\n
+    4) teilen"
+  must_choose: "Musst wählen 1, 2, 3, oder 4"
+  adding: 'Hinzufügen'
+  subtracting: 'Subtrahieren'
+  multiplying: 'Multiplizieren'
+  dividing: 'Teilen'
+  result: 'Das Ergebnis ist'
+  the_two_numbers: 'der beiden Zahlen...'
+  thanks_1: "Vielen Dank für die Verwendung des Taschenrechners,"
+  thanks_2: '. Auf Wiedersehen!'
+  again: 'Möchten Sie eine weitere Berechnung durchführen? (y/n)'

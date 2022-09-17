@@ -1,9 +1,8 @@
 require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
-LANGUAGE = 'en'
+LANGUAGE = 'de'
 
-def prompt(key)
-  message = messages(key, LANGUAGE)
+def prompt(message)
   puts "=> #{message}"
 end
 
@@ -27,13 +26,13 @@ def operation_to_message(op)
   selection = ''
   case op
   when '1'
-    selection = messages('adding')
+    selection = messages('adding', LANGUAGE)
   when '2'
-    selection = messages('subtracting')
+    selection = messages('subtracting', LANGUAGE)
   when '3'
-    selection = messages('multiplying')
+    selection = messages('multiplying', LANGUAGE)
   when '4'
-    selection = messages('dividing')
+    selection = messages('dividing', LANGUAGE)
   end
   selection
 end
@@ -42,14 +41,14 @@ system('clear')
 
 
 # Welcome user
-prompt ('welcome')
+prompt (messages('welcome', LANGUAGE))
 
 name = ''
 loop do
   name = gets.chomp
 
   if name.empty?
-    prompt ('name')
+    prompt (messages('name', LANGUAGE))
   else
     break
   end
@@ -61,29 +60,29 @@ loop do
 
   # Collect first digit
   loop do
-    prompt ('first_num')
+    prompt (messages('first_num', LANGUAGE))
     digit1 = gets.chomp
 
     if valid_number?(digit1)
       break
     else
-      prompt ('invalid_num')
+      prompt (messages('invalid_num', LANGUAGE))
     end
   end
 
   # Collect second digit
   digit2 = ''
   loop do
-    prompt ('second_num')
+    prompt (messages('second_num', LANGUAGE))
     digit2 = gets.chomp
     if valid_number?(digit2)
       break
     else
-      prompt ('invalid_num')
+      prompt (messages('invalid_num', LANGUAGE))
     end
   end
 
-  prompt ('operator_prompt')
+  prompt (messages('operator_prompt', LANGUAGE))
 
   # Collect operator
   operator = ''
@@ -93,12 +92,11 @@ loop do
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt ('must_choose')
+      prompt (messages('must_choose', LANGUAGE))
     end
   end
 
-  #TODO refactor prompt method to allow for multiple inputs?
-  puts  "#{operation_to_message(operator)} #{messages('the_two_numbers')}"
+  prompt  "#{operation_to_message(operator)} #{messages('the_two_numbers', LANGUAGE)}"
   sleep 1
 
   # Calculate result
@@ -114,15 +112,15 @@ loop do
           end
 
   # Give result
-  puts "=> #{messages('result')} #{result}"
+  puts "=> #{messages('result', LANGUAGE)} #{result}"
   sleep 1
 
   # Ask for another calculation
-  prompt 'again'
+  prompt (messages('again', LANGUAGE))
   answer = gets.chomp
   break unless answer.downcase == 'y' || answer.downcase == 'yes'
   system('clear')
 end
 
 # Thank user
-prompt "#{messages('thanks_1')} #{name} #{messages('thanks_2')}"
+prompt "#{messages('thanks_1', LANGUAGE)} #{name}#{messages('thanks_2', LANGUAGE)}"
