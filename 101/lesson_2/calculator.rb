@@ -1,6 +1,6 @@
 require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
-LANGUAGE = 'de'
+LANGUAGE = 'en'
 
 def prompt(message)
   puts "=> #{message}"
@@ -15,7 +15,7 @@ def valid_number?(num)
 end
 
 def valid_integer?(num)
-  num == num.to_i.to_s 
+  num == num.to_i.to_s
 end
 
 def valid_float?(num)
@@ -39,16 +39,15 @@ end
 
 system('clear')
 
-
 # Welcome user
-prompt (messages('welcome', LANGUAGE))
+prompt(messages('welcome', LANGUAGE))
 
 name = ''
 loop do
   name = gets.chomp
 
   if name.empty?
-    prompt (messages('name', LANGUAGE))
+    prompt(messages('name', LANGUAGE))
   else
     break
   end
@@ -60,29 +59,29 @@ loop do
 
   # Collect first digit
   loop do
-    prompt (messages('first_num', LANGUAGE))
+    prompt(messages('first_num', LANGUAGE))
     digit1 = gets.chomp
 
     if valid_number?(digit1)
       break
     else
-      prompt (messages('invalid_num', LANGUAGE))
+      prompt(messages('invalid_num', LANGUAGE))
     end
   end
 
   # Collect second digit
   digit2 = ''
   loop do
-    prompt (messages('second_num', LANGUAGE))
+    prompt(messages('second_num', LANGUAGE))
     digit2 = gets.chomp
     if valid_number?(digit2)
       break
     else
-      prompt (messages('invalid_num', LANGUAGE))
+      prompt(messages('invalid_num', LANGUAGE))
     end
   end
 
-  prompt (messages('operator_prompt', LANGUAGE))
+  prompt(messages('operator_prompt', LANGUAGE))
 
   # Collect operator
   operator = ''
@@ -92,11 +91,11 @@ loop do
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt (messages('must_choose', LANGUAGE))
+      prompt(messages('must_choose', LANGUAGE))
     end
   end
 
-  prompt  "#{operation_to_message(operator)} #{messages('the_two_numbers', LANGUAGE)}"
+  prompt "#{operation_to_message(operator)} #{messages('the_two_numbers', LANGUAGE)}"
   sleep 1
 
   # Calculate result
@@ -109,14 +108,14 @@ loop do
              digit1.to_i * digit2.to_i
            when '4'
              digit1.to_f / digit2.to_f
-          end
+           end
 
   # Give result
   puts "=> #{messages('result', LANGUAGE)} #{result}"
   sleep 1
 
   # Ask for another calculation
-  prompt (messages('again', LANGUAGE))
+  prompt(messages('again', LANGUAGE))
   answer = gets.chomp
   break unless answer.downcase == 'y' || answer.downcase == 'yes'
   system('clear')
