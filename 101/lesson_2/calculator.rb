@@ -21,15 +21,21 @@ def operation_to_message(op)
   selection = ''
   case op
   when '1'
-    selection = 'Adding'
+    selection = (MESSAGES['adding'])
   when '2'
-    selection = 'Subtracting'
+    selection = (MESSAGES['subtracting'])
   when '3'
-    selection = 'Multiplying'
+    selection = (MESSAGES['multiplying'])
   when '4'
-    selection = 'Dividing'
+    selection = (MESSAGES['dividing'])
   end
-  return selection
+  selection
+end
+
+system('clear')
+
+def messages(message, lang='en')
+  MESSAGES[lang][message]
 end
 
 prompt (MESSAGES['welcome'])
@@ -79,11 +85,12 @@ loop do # main loop
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt "Must choose 1, 2, 3, or 4"
+      prompt (MESSAGES['must_choose'])
     end
   end
 
-  prompt "#{operation_to_message(operator)} the two numbers..."
+  prompt operation_to_message(operator) + MESSAGES['the_two_numbers']
+  sleep 1
 
   result = case operator
            when '1'
@@ -96,11 +103,12 @@ loop do # main loop
              digit1.to_f / digit2.to_f
           end
 
-  prompt "The result is #{result}"
+  prompt MESSAGES['result'] + result.to_s
+  sleep 1
 
-  prompt "Do you want to perform another calculation? (Y to calculate again)"
+  prompt MESSAGES['again']
   answer = gets.chomp
-  break unless answer.downcase.start_with? 'y'
+  break unless answer.downcase == 'y' || answer.downcase == 'yes'
 end
 
-prompt "Thank you for using the calculator. Good bye!"
+prompt MESSAGES['thanks']

@@ -9,3 +9,12 @@ operator_prompt:
   2) subtract\n
   3) multiply\n
   4) divide"
+must_choose: "Must choose 1, 2, 3, or 4"
+adding: 'Adding'
+subtracting: 'Subtracting'
+multiplying: 'Multiplying'
+dividing: 'Dividing'
+result: 'The result is '
+the_two_numbers: ' the two numbers...'
+thanks: "Thank you for using the calculator. Good bye!"
+again: 'Do you want to perform another calculation? (Y to calculate again)'
