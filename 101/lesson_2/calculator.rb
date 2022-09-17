@@ -38,6 +38,7 @@ def messages(message, lang='en')
   MESSAGES[lang][message]
 end
 
+# Welcome user
 prompt (MESSAGES['welcome'])
 
 name = ''
@@ -51,9 +52,11 @@ loop do
   end
 end
 
-loop do # main loop
+# Main calculator loop
+loop do
   digit1 = ''
 
+  # Collect first digit
   loop do
     prompt (MESSAGES['first_num'])
     digit1 = gets.chomp
@@ -65,6 +68,7 @@ loop do # main loop
     end
   end
 
+  # Collect second digit
   digit2 = ''
   loop do
     prompt (MESSAGES['second_num'])
@@ -78,6 +82,7 @@ loop do # main loop
 
   prompt (MESSAGES['operator_prompt'])
 
+  # Collect operator
   operator = ''
   loop do
     operator = gets.chomp
@@ -92,6 +97,7 @@ loop do # main loop
   prompt operation_to_message(operator) + MESSAGES['the_two_numbers']
   sleep 1
 
+  # Calculate result
   result = case operator
            when '1'
              digit1.to_i + digit2.to_i
@@ -103,12 +109,16 @@ loop do # main loop
              digit1.to_f / digit2.to_f
           end
 
+  # Give result
   prompt MESSAGES['result'] + result.to_s
   sleep 1
 
+  # Ask for another calculation
   prompt MESSAGES['again']
   answer = gets.chomp
   break unless answer.downcase == 'y' || answer.downcase == 'yes'
+  system('clear')
 end
 
-prompt MESSAGES['thanks']
+# Thank user
+prompt MESSAGES['thanks_1'] + name + MESSAGES['thanks_2']
