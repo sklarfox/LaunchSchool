@@ -10,12 +10,12 @@ def display_result(player, computer)
   winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
 
   if winning_table.find_index(computer) == 0
-    prompt "It's a tie!\n\n"
+    prompt "It's a tie!"
   elsif winning_table.find_index(computer) == 1 ||
         winning_table.find_index(computer) == 3
-    prompt "Computer won the round!\n\n"
+    prompt "Computer won the round!"
   else
-    prompt "You won the round!\n\n"
+    prompt "You won the round!"
   end
 end
 
@@ -59,17 +59,19 @@ def display_score(hash)
   prompt "Scoreboard:"
   print "  | "
   hash.each { |key, value| print "#{key.capitalize}: #{value} | " }
-  puts "\n\n"
+  puts ''
 end
 
 def welcome_user
   prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
-  prompt "You will be playing against a state of the art computer, Compy386"
+  sleep 1
+  prompt "You will be playing against a state of the art computer, Compy386!"
+  sleep 1
   prompt "What is your name?"
-  name = gets.chomp
+  name = get_name()
   prompt "Welcome #{name}! Would you like to hear the rules? (y/n)"
   choice = gets.chomp
-  if choice.downcase.start_with?('y')
+  if choice.downcase == 'y' || choice.downcase == 'yes'
     display_rules()
   end
   name
@@ -91,6 +93,18 @@ def display_rules
     MSG
   prompt rules
   gets.chomp
+end
+
+def get_name
+  name = ''
+  loop do
+    name = gets.chomp.strip
+    if name.empty?
+      prompt("Make sure to use a valid name.")
+    else
+      break
+  end
+  name
 end
 
 system('clear')
@@ -120,7 +134,7 @@ loop do
 
     computer_choice = VALID_CHOICES.sample
 
-    prompt "You chose: #{choice}; Compy386 chose: #{computer_choice}\n\n"
+    prompt "You chose: #{choice}; Compy386 chose: #{computer_choice}"
 
     display_result(choice, computer_choice)
     winner = return_winner(choice, computer_choice)
@@ -129,8 +143,8 @@ loop do
     display_score(scoreboard)
 
     if scoreboard.value?(3)
-      overall = scoreboard.key(3)
-      prompt "The winner of the game is #{overall.to_s.capitalize}!\n\n"
+      overall_winner = scoreboard.key(3)
+      prompt "The winner of the game is #{overall_winner.to_s.capitalize}!"
       break
     end
   end
@@ -138,7 +152,8 @@ loop do
   # Decide if new game will be played
   prompt "Would you like to play again? (y/n)"
   choice = gets.chomp
-  break unless choice.downcase.start_with?('y')
+  break unless choice.downcase == 'y' || choice.downcase == 'yes'
   system('clear')
 end
+
 prompt "Thank you for playing #{name}. Good bye!"
