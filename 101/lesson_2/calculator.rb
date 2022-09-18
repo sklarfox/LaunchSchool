@@ -37,6 +37,28 @@ def operation_to_message(op)
   selection
 end
 
+def collect_digit(prompt)
+  digit = ''
+  loop do
+    prompt(messages(prompt, LANGUAGE))
+    digit = gets.chomp
+    if valid_number?(digit)
+      break
+    else
+      prompt(messages('invalid_num', LANGUAGE))
+    end
+  end
+  digit
+end
+
+def convert_digit(digit)
+  if digit.include?('.')
+    digit.to_f
+  else
+    digit.to_i
+  end
+end
+
 system('clear')
 
 # Welcome user
@@ -44,7 +66,7 @@ prompt(messages('welcome', LANGUAGE))
 
 name = ''
 loop do
-  name = gets.chomp
+  name = gets.chomp.strip
 
   if name.empty?
     prompt(messages('name', LANGUAGE))
@@ -55,35 +77,12 @@ end
 
 # Main calculator loop
 loop do
-  digit1 = ''
-
-  # Collect first digit
-  loop do
-    prompt(messages('first_num', LANGUAGE))
-    digit1 = gets.chomp
-
-    if valid_number?(digit1)
-      break
-    else
-      prompt(messages('invalid_num', LANGUAGE))
-    end
-  end
-
-  # Collect second digit
-  digit2 = ''
-  loop do
-    prompt(messages('second_num', LANGUAGE))
-    digit2 = gets.chomp
-    if valid_number?(digit2)
-      break
-    else
-      prompt(messages('invalid_num', LANGUAGE))
-    end
-  end
-
-  prompt(messages('operator_prompt', LANGUAGE))
+  # Collect digits
+  digit1 = collect_digit('first_num')
+  digit2 = collect_digit('second_num')
 
   # Collect operator
+  prompt(messages('operator_prompt', LANGUAGE))
   operator = ''
   loop do
     operator = gets.chomp
@@ -95,19 +94,21 @@ loop do
     end
   end
 
-  prompt "#{operation_to_message(operator)} #{messages('the_two_numbers', LANGUAGE)}"
+  prompt "#{operation_to_message(operator)}" \
+  "#{messages('the_two_numbers', LANGUAGE)}"
+
   sleep 1
 
   # Calculate result
   result = case operator
            when '1'
-             digit1.to_i + digit2.to_i
+             convert_digit(digit1) + convert_digit(digit2)
            when '2'
-             digit1.to_i - digit2.to_i
+             convert_digit(digit1) - convert_digit(digit2)
            when '3'
-             digit1.to_i * digit2.to_i
+             convert_digit(digit1) * convert_digit(digit2)
            when '4'
-             digit1.to_f / digit2.to_f
+             convert_digit(digit1) / convert_digit(digit2)
            end
 
   # Give result
@@ -122,4 +123,5 @@ loop do
 end
 
 # Thank user
-prompt "#{messages('thanks_1', LANGUAGE)} #{name}#{messages('thanks_2', LANGUAGE)}"
+prompt "#{messages('thanks_1', LANGUAGE)} \
+#{name}#{messages('thanks_2', LANGUAGE)}"

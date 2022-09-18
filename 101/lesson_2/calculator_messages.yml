@@ -16,7 +16,7 @@ en:
   multiplying: 'Multiplying'
   dividing: 'Dividing'
   result: 'The result is'
-  the_two_numbers: 'the two numbers...'
+  the_two_numbers: ' the two numbers...'
   thanks_1: "Thank you for using Calculator,"
   thanks_2: '. Goodbye!'
   again: 'Do you want to perform another calculation? (y/n)'
