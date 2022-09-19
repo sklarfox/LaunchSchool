@@ -1,6 +1,5 @@
 require 'yaml'
 MESSAGES = YAML.load_file('rpssl_messages.yml')
-
 VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"]
 VALID_ABRV = { 'r' => 'rock',
                'p' => 'paper',
