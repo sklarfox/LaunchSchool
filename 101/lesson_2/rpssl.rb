@@ -65,19 +65,27 @@ end
 def display_rules
   system('clear')
   rules = <<-MSG
- Scissors cuts Paper
-    Paper covers Rock\n    Rock crushes Lizard
-    Lizard poisons Spock\n    Spock smashes Scissors
+ Play continues until one player reaches 3 points.
+    Each round, both players chooses one of five options:
+    rock, paper, scissors, spock, or lizard.
+
+    The winner for each round is determined by the following rules:
+    Scissors cuts Paper
+    Paper covers Rock
+    Rock crushes Lizard
+    Lizard poisons Spock
+    Spock smashes Scissors
     Scissors decapitates Lizard
     Lizard eats Paper
     Paper disproves Spock
     Spock vaporizes Rock
-    Rock (as it always has) crushes Scissors
+    Rock crushes Scissors
 
     Enter any key to continue
     MSG
   prompt rules
   gets.chomp
+  system('clear')
 end
 
 def get_name
@@ -129,6 +137,9 @@ sleep 1
 prompt "You will be playing against a state of the art computer, Compy386!"
 sleep 1.5
 name = get_name()
+prompt "Welcome, #{name}! Would you like to hear the rules? (y/n)"
+choice = gets.chomp.downcase
+display_rules() if choice == 'y' || choice == 'yes'
 
 # Main program loop
 loop do
