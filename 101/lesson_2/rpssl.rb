@@ -111,6 +111,16 @@ def collect_choice
   choice
 end
 
+def new_game?
+  prompt "Would you like to play again? (y/n)"
+  choice = gets.chomp
+  if choice.downcase == 'y' || choice.downcase == 'yes'
+    true
+  else
+    false
+  end
+end
+
 system('clear')
 
 # Welcome user, get name
@@ -123,7 +133,7 @@ name = get_name()
 # Main program loop
 loop do
   # Single game loop until winner
-  scoreboard = { name => 0, 'compy386' => 0 }
+  scoreboard = { name => 0, :compy386 => 0 }
 
   loop do
     # Determine player choices
@@ -147,9 +157,7 @@ loop do
   end
 
   # Decide if new game will be played
-  prompt "Would you like to play again? (y/n)"
-  choice = gets.chomp
-  break unless choice.downcase == 'y' || choice.downcase == 'yes'
+  break unless new_game?()
   system('clear')
 end
 
