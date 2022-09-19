@@ -1,3 +1,6 @@
+require 'yaml'
+MESSAGES = YAML.load_file('rpssl_messages.yml')
+
 VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"]
 VALID_ABRV = { 'r' => 'rock',
                'p' => 'paper',
@@ -10,12 +13,12 @@ def display_result(player, computer)
   winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
 
   if winning_table.find_index(computer) == 0
-    prompt "It's a tie!"
+    prompt MESSAGES['tie']
   elsif winning_table.find_index(computer) == 1 ||
         winning_table.find_index(computer) == 3
-    prompt "Computer won the round!"
+    prompt MESSAGES['computer_won']
   else
-    prompt "You won the round!"
+    prompt MESSAGES['player_won']
   end
 end
 
@@ -38,7 +41,7 @@ def prompt(message)
 end
 
 def display_choices
-  print "=> Choose one: "
+  print MESSAGES['choose_one']
   VALID_ABRV.each { |key, value| print "#{value}(#{key}) " }
   puts "\n"
 end
@@ -56,7 +59,7 @@ def standardize_choice(input)
 end
 
 def display_score(hash)
-  prompt "Scoreboard:"
+  prompt MESSAGES['scoreboard']
   print "  | "
   hash.each { |key, value| print "#{key.capitalize}: #{value} | " }
   puts ''
@@ -64,37 +67,18 @@ end
 
 def display_rules
   system('clear')
-  rules = <<-MSG
- Play continues until one player reaches 3 points.
-    Each round, both players chooses one of five options:
-    rock, paper, scissors, spock, or lizard.
-
-    The winner for each round is determined by the following rules:
-    Scissors cuts Paper
-    Paper covers Rock
-    Rock crushes Lizard
-    Lizard poisons Spock
-    Spock smashes Scissors
-    Scissors decapitates Lizard
-    Lizard eats Paper
-    Paper disproves Spock
-    Spock vaporizes Rock
-    Rock crushes Scissors
-
-    Enter any key to continue
-    MSG
-  prompt rules
+  prompt MESSAGES['rules']
   gets.chomp
   system('clear')
 end
 
 def get_name
   name = ''
-  prompt "What is your name?"
+  prompt MESSAGES['ask_name']
   loop do
     name = gets.chomp.strip
     if name.empty?
-      prompt("Make sure to use a valid name.")
+      prompt MESSAGES['valid_name']
     else
       break
     end
@@ -113,14 +97,14 @@ def collect_choice
       system('clear')
       break
     else
-      prompt "That is not a valid choice."
+      prompt MESSAGES['invalid_choice']
     end
   end
   choice
 end
 
 def new_game?
-  prompt "Would you like to play again? (y/n)"
+  prompt MESSAGES['play_again']
   choice = gets.chomp
   if choice.downcase == 'y' || choice.downcase == 'yes'
     true
@@ -132,12 +116,12 @@ end
 system('clear')
 
 # Welcome user, get name
-prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
+prompt MESSAGES['welcome']
 sleep 1
-prompt "You will be playing against a state of the art computer, Compy386!"
+prompt MESSAGES['welcome_2']
 sleep 1.5
 name = get_name()
-prompt "Welcome, #{name}! Would you like to hear the rules? (y/n)"
+prompt format(MESSAGES['welcome_3'], name: name)
 choice = gets.chomp.downcase
 display_rules() if choice == 'y' || choice == 'yes'
 
@@ -152,7 +136,7 @@ loop do
     computer_choice = VALID_CHOICES.sample
 
     # Determine/display winner and scores
-    prompt "You chose: #{choice}; Compy386 chose: #{computer_choice}"
+    prompt format(MESSAGES['choices'], pc: choice, cc: computer_choice)
     display_result(choice, computer_choice)
     winner = return_winner(choice, computer_choice)
     winner = name if winner == :player
@@ -161,8 +145,8 @@ loop do
 
     # Check for winner
     if scoreboard.value?(3)
-      overall_winner = scoreboard.key(3)
-      prompt "The winner of the game is #{overall_winner.to_s.capitalize}!"
+      overall_winner = scoreboard.key(3).to_s.capitalize
+      prompt format(MESSAGES['winner'], overall: overall_winner)
       break
     end
   end
@@ -172,4 +156,4 @@ loop do
   system('clear')
 end
 
-prompt "Thank you for playing, #{name}. Goodbye!"
+prompt format(MESSAGES['thanks'], name: name)
