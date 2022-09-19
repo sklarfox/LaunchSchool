@@ -62,21 +62,6 @@ def display_score(hash)
   puts ''
 end
 
-def welcome_user
-  prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
-  sleep 1
-  prompt "You will be playing against a state of the art computer, Compy386!"
-  sleep 1
-  prompt "What is your name?"
-  name = get_name()
-  prompt "Welcome #{name}! Would you like to hear the rules? (y/n)"
-  choice = gets.chomp
-  if choice.downcase == 'y' || choice.downcase == 'yes'
-    display_rules()
-  end
-  name
-end
-
 def display_rules
   system('clear')
   rules = <<-MSG
@@ -97,51 +82,63 @@ end
 
 def get_name
   name = ''
+  prompt "What is your name?"
   loop do
     name = gets.chomp.strip
     if name.empty?
       prompt("Make sure to use a valid name.")
     else
       break
+    end
   end
   name
 end
 
-system('clear')
-name = welcome_user()
-name_sym = name.downcase.to_sym
+def collect_choice
+  choice = ''
+  loop do # Collect user input loop
+    display_choices()
+    choice = gets.chomp.downcase
 
-# Program loop
+    if valid_choice?(choice)
+      choice = standardize_choice(choice)
+      system('clear')
+      break
+    else
+      prompt "That is not a valid choice."
+    end
+  end
+  choice
+end
+
+system('clear')
+
+# Welcome user, get name
+prompt "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
+sleep 1
+prompt "You will be playing against a state of the art computer, Compy386!"
+sleep 1.5
+name = get_name()
+
+# Main program loop
 loop do
-  # Single game loop, until winner
-  scoreboard = { name_sym => 0, :compy386 => 0 }
+  # Single game loop until winner
+  scoreboard = { name => 0, 'compy386' => 0 }
 
   loop do
-    choice = ''
-
-    loop do # Collect user input loop
-      display_choices()
-      choice = gets.chomp.downcase
-
-      if valid_choice?(choice)
-        choice = standardize_choice(choice)
-        system('clear')
-        break
-      else
-        prompt "That is not a valid choice."
-      end
-    end
-
+    # Determine player choices
+    choice = collect_choice()
     computer_choice = VALID_CHOICES.sample
 
+    # Determine/display winner and scores
     prompt "You chose: #{choice}; Compy386 chose: #{computer_choice}"
-
     display_result(choice, computer_choice)
     winner = return_winner(choice, computer_choice)
-    winner = name_sym if winner == :player
+    winner = name if winner == :player
     scoreboard[winner] += 1 unless winner == :tie
     display_score(scoreboard)
 
+    # Check for winner
     if scoreboard.value?(3)
       overall_winner = scoreboard.key(3)
       prompt "The winner of the game is #{overall_winner.to_s.capitalize}!"
@@ -156,4 +153,4 @@ loop do
   system('clear')
 end
 
-prompt "Thank you for playing #{name}. Good bye!"
+prompt "Thank you for playing, #{name}. Goodbye!"
