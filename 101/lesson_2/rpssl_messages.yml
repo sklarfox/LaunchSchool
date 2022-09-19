@@ -1,0 +1,32 @@
+tie: "It's a tie!"
+computer_won: "Computer won the round!"
+player_won: "You won the round!"
+choose_one: "=> Choose one: "
+scoreboard: "Scoreboard:"
+rules: "Play continues until one player reaches 3 points.\n
+\ \ Each round, both players chooses one of five options:\n
+\ \ rock, paper, scissors, spock, or lizard.\n
+\n
+\ \ The winner for each round is determined by the following rules:\n
+\ \ Scissors cuts Paper\n
+\ \ Paper covers Rock\n
+\ \ Rock crushes Lizard\n
+\ \ Lizard poisons Spock\n
+\ \ Spock smashes Scissors\n
+\ \ Scissors decapitates Lizard\n
+\ \ Lizard eats Paper\n
+\ \ Paper disproves Spock\n
+\ \ Spock vaporizes Rock\n
+\ \ Rock crushes Scissors\n
+\n
+\ \ Enter to continue\n"
+ask_name: "What is your name?"
+valid_name: "Make sure to use a valid name."
+invalid_choice: "That is not a valid choice."
+play_again: "Would you like to play again? (y/n)"
+welcome: "Welcome to Rock, Paper, Scissors, Spock, Lizard!"
+welcome_2: "You will be playing against a state of the art computer, Compy386!"
+welcome_3: "Welcome, %{name}! Would you like to hear the rules? (y/n)"
+choices: "You chose: %{pc}; Compy386 chose: %{cc}."
+winner: "The winner of the game is %{overall}!"
+thanks: "Thank you for playing, %{name}. Goodbye!"
