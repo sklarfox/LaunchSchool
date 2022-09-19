@@ -100,15 +100,17 @@ loop do
   sleep 1
 
   # Calculate result
+  digit1 = convert_digit(digit1)
+  digit2 = convert_digit(digit2)
   result = case operator
            when '1'
-             convert_digit(digit1) + convert_digit(digit2)
+             digit1 + digit2
            when '2'
-             convert_digit(digit1) - convert_digit(digit2)
+             digit1 - digit2
            when '3'
-             convert_digit(digit1) * convert_digit(digit2)
+             digit1 * digit2
            when '4'
-             convert_digit(digit1) / convert_digit(digit2)
+             digit1 / digit2
            end
 
   # Give result
