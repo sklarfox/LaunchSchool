@@ -22,7 +22,7 @@ def display_result(player, computer)
   end
 end
 
-def return_winner(player, computer)
+def return_winner(player, computer, name)
   # Rotates the choices table to align with player choice at index 0
   winning_table = VALID_CHOICES.rotate(VALID_CHOICES.find_index(player))
 
@@ -32,7 +32,7 @@ def return_winner(player, computer)
         winning_table.find_index(computer) == 3
     :compy386
   else
-    :player
+    name
   end
 end
 
@@ -131,15 +131,14 @@ loop do
   scoreboard = { name => 0, :compy386 => 0 }
 
   loop do
-    # Determine player choices
+    # Determine choices for both players
     choice = collect_choice()
     computer_choice = VALID_CHOICES.sample
 
     # Determine/display winner and scores
     prompt format(MESSAGES['choices'], pc: choice, cc: computer_choice)
     display_result(choice, computer_choice)
-    winner = return_winner(choice, computer_choice)
-    winner = name if winner == :player
+    winner = return_winner(choice, computer_choice, name)
     scoreboard[winner] += 1 unless winner == :tie
     display_score(scoreboard)
 
