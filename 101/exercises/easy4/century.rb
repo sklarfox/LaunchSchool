@@ -40,11 +40,26 @@ def century(year)
   last_digit = century_num % 10
   case last_digit
   when 1
-    century = "#{century_num}st"
+    # Check if it should be 11th
+    if century_num % 100 == 11
+      century = "#{century_num}th"
+    else
+      century = "#{century_num}st"
+    end
   when 2
-    century = "#{century_num}nd"
+    # Check if it should be 12th
+    if century_num % 100 == 12
+      century = "#{century_num}th"
+    else
+      century = "#{century_num}nd"
+    end
   when 3
-    century = "#{century_num}rd"
+    # Check if it should be 13th
+    if century_num % 100 == 13
+      century = "#{century_num}th"
+    else
+      century = "#{century_num}rd"
+    end
   else
     century = "#{century_num}th"
   end
