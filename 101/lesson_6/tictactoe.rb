@@ -1,4 +1,5 @@
 require 'pry'
+require 'pry-byebug'
 
 =begin
   TODO items:
@@ -60,12 +61,25 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  if detect_at_risk_square(brd)
-    brd[detect_at_risk_square(brd)] = COMPUTER_MARKER
-  else
-    square = empty_squares(brd).sample
-    brd[square] = COMPUTER_MARKER
+  # Offense first
+  square = detect_at_risk_square(brd, COMPUTER_MARKER)
+
+  # Then Defense
+  if !square
+    square = detect_at_risk_square(brd, PLAYER_MARKER)
   end
+
+  # Choose middle if available
+  if !square && brd[5] == INITIAL_MARKER
+    square = 5
+  end
+
+  # Otherwise pick randomly
+  if !square
+    square = empty_squares(brd).sample
+  end
+
+  brd[square] = COMPUTER_MARKER
 end
 
 def board_full?(brd)
@@ -140,9 +154,9 @@ def detect_overall_winner(scrbrd)
   end
 end
 
-def detect_at_risk_square(brd)
+def detect_at_risk_square(brd, marker)
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
+    if brd.values_at(*line).count(marker) == 2 &&
        brd.values_at(*line).count(INITIAL_MARKER) == 1
       return line[brd.values_at(*line).index(INITIAL_MARKER)]
     end
@@ -176,6 +190,7 @@ loop do
     if someone_won?(board)
       prompt "#{detect_winner(board)} won the round!"
       scoreboard[detect_winner(board)] += 1
+      display_scoreboard(scoreboard)
     else
       prompt "It's a tie!"
     end
@@ -186,7 +201,6 @@ loop do
       sleep 3
       break
     end
-    display_scoreboard(scoreboard)
   end
   break unless play_again?
 end
