@@ -3,7 +3,6 @@ require 'pry-byebug'
 
 =begin
   TODO items:
-  Display scoreboard
   Indicate which squares are which number
 =end
 
@@ -92,16 +91,6 @@ end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    # if brd[line[0]] == PLAYER_MARKER &&
-    #    brd[line[1]] == PLAYER_MARKER &&
-    #    brd[line[2]] == PLAYER_MARKER
-    #   return 'Player'
-    # elsif brd[line[0]] == COMPUTER_MARKER &&
-    #       brd[line[1]] == COMPUTER_MARKER &&
-    #       brd[line[2]] == COMPUTER_MARKER
-    #   return 'Computer'
-    # end
-
     if brd.values_at(*line).count('X') == 3
       return 'Player'
     elsif brd.values_at(*line).count('O') == 3
@@ -164,10 +153,17 @@ def detect_at_risk_square(brd, marker)
   nil
 end
 
+def get_first_player
+  prompt "Who whould go first? player (p), computer (c), random(r)"
+  choice = gets.chomp
+  # TODO change return values
+  'Player'
+end
+
 # Game Loop
 loop do
   scoreboard = initialize_scoreboard
-
+  
   # Round Loop
   loop do
     board = initialize_board
