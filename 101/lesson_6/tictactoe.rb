@@ -3,19 +3,35 @@ require 'pry-byebug'
 
 =begin
   TODO items:
+  REMOVE TEST CONDITION in initial board (player starts with 5 points)
   Indicate which squares are which number
-  Allow player choice of marker
 =end
+
 def prompt(msg)
   puts "=> #{msg}"
 end
 
 def choose_user_marker
+  system 'clear'
   loop do
     prompt "What would you like your marker to be? (X or O)"
     choice = gets.chomp.strip.upcase
     return choice if choice == 'X' || choice == 'O'
     prompt "Sorry, that is an invalid choice."
+  end
+end
+
+def choose_first_player
+  loop do
+    puts "Who will go first? player (p), computer (c), random(r)"
+    choice = gets.chomp.downcase
+    case choice
+    when 'p' || 'player' then return 'Player'
+    when 'c' || 'computer' then return 'Computer'
+    when 'r'|| 'random' then return ['Player', 'Computer'].sample
+    else
+      puts "That is an invalid choice."
+    end
   end
 end
 
@@ -33,15 +49,15 @@ def display_board(brd)
   system 'clear'
   puts "You're an #{PLAYER_MARKER}, Computer is an #{COMPUTER_MARKER}"
   puts ""
-  puts "     |     | "
+  puts "1    |2    |3"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
   puts "     |     |"
   puts "-----+-----+-----"
-  puts "     |     | "
+  puts "4    |5    |6"
   puts "  #{brd[4]}  |  #{brd[5]}  |  #{brd[6]}"
   puts "     |     |"
   puts "-----+-----+-----"
-  puts "     |     | "
+  puts "7    |8    |9"
   puts "  #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}"
   puts "     |     |"
   puts ""
@@ -126,12 +142,15 @@ def joinor(items, delimiter=', ', word='or')
 end
 
 def initialize_scoreboard
-  { 'Player' => 5, 'Computer' => 0, nil => 0 }
+  { 'Player' => 0, 'Computer' => 0, nil => 0 }
 end
 
 def display_scoreboard(scoreboard)
   puts "Scoreboard".center(21)
   puts "Player: #{scoreboard['Player']}, Computer: #{scoreboard['Computer']}"
+end
+
+def enter_to_continue
   prompt 'Enter to continue'
   gets
 end
@@ -162,20 +181,6 @@ def detect_at_risk_square(brd, marker)
     end
   end
   nil
-end
-
-def choose_first_player
-  loop do
-    puts "Who will go first? player (p), computer (c), random(r)"
-    choice = gets.chomp.downcase
-    case choice
-    when 'p' || 'player' then return 'Player'
-    when 'c' || 'computer' then return 'Computer'
-    when 'r'|| 'random' then return ['Player', 'Computer'].sample
-    else
-      puts "That is an invalid choice."
-    end
-  end
 end
 
 def place_piece!(brd, current)
@@ -220,11 +225,15 @@ loop do
 
     # Check for overall winner
     if overall_winner?(scoreboard)
-      print "Congratulations!" if detect_at_risk_square(scoreboard) == 'Player'
-      prompt "#{detect_overall_winner(scoreboard)} won the game!"
-      sleep 3
+      if detect_overall_winner(scoreboard) == 'Player'
+        prompt "Congratulations, you won the game!"
+      else
+        prompt "The computer won the game."
+      end
+      sleep 2
       break
     end
+    enter_to_continue
   end
   break unless play_again?
 end
