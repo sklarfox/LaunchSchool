@@ -60,8 +60,12 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
-  brd[square] = COMPUTER_MARKER
+  if detect_at_risk_square(brd)
+    brd[detect_at_risk_square(brd)] = COMPUTER_MARKER
+  else
+    square = empty_squares(brd).sample
+    brd[square] = COMPUTER_MARKER
+  end
 end
 
 def board_full?(brd)
@@ -108,7 +112,7 @@ def joinor(items, delimiter=', ', word='or')
 end
 
 def initialize_scoreboard
-  scoreboard = {'Player' => 4, 'Computer' => 0, nil => 0}
+  { 'Player' => 0, 'Computer' => 0, nil => 0 }
 end
 
 def display_scoreboard(scoreboard)
@@ -124,57 +128,67 @@ def play_again?
   answer.downcase == 'y' || answer.downcase == 'yes'
 end
 
-def overall_winner?(scoreboard)
-  scoreboard['Player'] == 5 || scoreboard['Computer'] == 5
+def overall_winner?(scrbrd)
+  scrbrd['Player'] == 5 || scrbrd['Computer'] == 5
 end
 
-def detect_overall_winner(scoreboard)
-  if scoreboard['Player'] == 5
+def detect_overall_winner(scrbrd)
+  if scrbrd['Player'] == 5
     'Player'
   else
     'Computer'
   end
 end
 
-  # Game Loop
-  loop do
-    scoreboard = initialize_scoreboard
-
-    # Round Loop
-    loop do
-      board = initialize_board
-      display_board(board)
-
-      # Players place pieces loop
-      loop do
-        display_board(board)
-
-        player_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-
-        computer_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-      end
-
-      display_board(board)
-
-      # Add score if someone won
-      if someone_won?(board)
-        prompt "#{detect_winner(board)} won the round!"
-        scoreboard[detect_winner(board)] += 1
-      else
-        prompt "It's a tie!"
-      end
-
-      # Check for overall winner
-      if overall_winner?(scoreboard)
-        prompt "#{detect_overall_winner(scoreboard)} won the game!"
-        sleep 3
-        break
-      end
-      display_scoreboard(scoreboard)
+def detect_at_risk_square(brd)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
+       brd.values_at(*line).count(INITIAL_MARKER) == 1
+      return line[brd.values_at(*line).index(INITIAL_MARKER)]
     end
-    break unless play_again?
   end
+  nil
+end
+
+# Game Loop
+loop do
+  scoreboard = initialize_scoreboard
+
+  # Round Loop
+  loop do
+    board = initialize_board
+    display_board(board)
+
+    # Players place pieces loop
+    loop do
+      display_board(board)
+
+      player_places_piece!(board)
+      break if someone_won?(board) || board_full?(board)
+
+      computer_places_piece!(board)
+      break if someone_won?(board) || board_full?(board)
+    end
+
+    display_board(board)
+
+    # Add score if someone won
+    if someone_won?(board)
+      prompt "#{detect_winner(board)} won the round!"
+      scoreboard[detect_winner(board)] += 1
+    else
+      prompt "It's a tie!"
+    end
+
+    # Check for overall winner
+    if overall_winner?(scoreboard)
+      prompt "#{detect_overall_winner(scoreboard)} won the game!"
+      sleep 3
+      break
+    end
+    display_scoreboard(scoreboard)
+  end
+  break unless play_again?
+end
 
 prompt "Thanks for playing Tic-tac-toe!"
