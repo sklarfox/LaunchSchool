@@ -1,4 +1,4 @@
-require 'pry'xw
+require 'pry'
 
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
@@ -87,6 +87,21 @@ def detect_winner(brd)
   nil
 end
 
+def joinor(items, delimiter=', ', word='or')
+  case items.size
+  when 0
+    ''
+  when 1
+    items.first
+  when 2
+    items.join(" #{word} ")
+  else
+    final_item = items.pop.to_s
+    "#{items.join(delimiter)}#{delimiter}#{word} #{final_item}"
+  end
+end
+
+# Main Game Loop
 loop do
   board = initialize_board
   display_board(board)
