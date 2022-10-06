@@ -4,6 +4,7 @@ require 'pry-byebug'
 =begin
   TODO items:
   Indicate which squares are which number
+  Impliment alteranting who goes first
 =end
 
 INITIAL_MARKER = ' '
@@ -153,30 +154,44 @@ def detect_at_risk_square(brd, marker)
   nil
 end
 
-def get_first_player
-  prompt "Who whould go first? player (p), computer (c), random(r)"
-  choice = gets.chomp
-  # TODO change return values
-  'Player'
+def choose_first_player
+  loop do
+    puts "Who will go first? player (p), computer (c), random(r)"
+    choice = gets.chomp.downcase
+    case choice
+    when 'p' || 'player' then return 'Player'
+    when 'c' || 'computer' then return 'Computer'
+    when 'r'|| 'random' then return ['Player', 'Computer'].sample
+    else
+      puts "That is an invalid choice."
+    end
+  end
 end
 
-# Game Loop
+def place_piece!(brd, current)
+  current == 'Player' ? player_places_piece!(brd) : computer_places_piece!(brd)
+end
+
+def alternate_player(current)
+  current == 'Player' ? 'Computer' : 'Player'
+end
+
+# Each game
 loop do
+  system 'clear'
   scoreboard = initialize_scoreboard
-  
-  # Round Loop
+  first = choose_first_player
+  # Each Round
   loop do
     board = initialize_board
+    current_player = first
     display_board(board)
 
     # Players place pieces loop
     loop do
       display_board(board)
-
-      player_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
-
-      computer_places_piece!(board)
+      place_piece!(board, current_player)
+      current_player = alternate_player(current_player)
       break if someone_won?(board) || board_full?(board)
     end
 
@@ -186,13 +201,17 @@ loop do
     if someone_won?(board)
       prompt "#{detect_winner(board)} won the round!"
       scoreboard[detect_winner(board)] += 1
-      display_scoreboard(scoreboard)
+      
     else
       prompt "It's a tie!"
     end
+    # Alternates who went first at end of the round
+    first = alternate_player(first)
+    display_scoreboard(scoreboard)
 
     # Check for overall winner
     if overall_winner?(scoreboard)
+      print "Congratulations!" if detect_at_risk_square(scoreboard) == 'Player'
       prompt "#{detect_overall_winner(scoreboard)} won the game!"
       sleep 3
       break
