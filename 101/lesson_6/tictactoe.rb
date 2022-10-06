@@ -12,7 +12,6 @@ def prompt(msg)
 end
 
 def choose_user_marker
-  system 'clear'
   loop do
     prompt "What would you like your marker to be? (X or O)"
     choice = gets.chomp.strip.upcase
@@ -26,23 +25,18 @@ def choose_first_player
     puts "Who will go first? player (p), computer (c), random(r)"
     choice = gets.chomp.downcase
     case choice
-    when 'p' || 'player' then return 'Player'
-    when 'c' || 'computer' then return 'Computer'
-    when 'r'|| 'random' then return ['Player', 'Computer'].sample
+    when 'p', 'player' then return 'Player'
+    when 'c', 'computer' then return 'Computer'
+    when 'r', 'random'
+      choice = ['Player', 'Computer'].sample
+      puts "The #{choice.downcase} will go first."
+      sleep 2
+      return choice
     else
       puts "That is an invalid choice."
     end
   end
 end
-
-INITIAL_MARKER = ' '
-PLAYER_MARKER = choose_user_marker
-COMPUTER_MARKER = PLAYER_MARKER == 'X' ? 'O' : 'X'
-WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
-                [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
-                [[1, 5, 9], [3, 5, 7]] # diagonals
-
-
 
 # rubocop:disable Metrics/AbcSize
 def display_board(brd)
@@ -68,6 +62,10 @@ def initialize_board
   new_board = {}
   (1..9).each { |num| new_board[num] = INITIAL_MARKER }
   new_board
+end
+
+def initialize_scoreboard
+  { 'Player' => 0, 'Computer' => 0, nil => 0 }
 end
 
 def empty_squares(brd)
@@ -141,10 +139,6 @@ def joinor(items, delimiter=', ', word='or')
   end
 end
 
-def initialize_scoreboard
-  { 'Player' => 0, 'Computer' => 0, nil => 0 }
-end
-
 def display_scoreboard(scoreboard)
   puts "Scoreboard".center(21)
   puts "Player: #{scoreboard['Player']}, Computer: #{scoreboard['Computer']}"
@@ -191,13 +185,26 @@ def alternate_player(current)
   current == 'Player' ? 'Computer' : 'Player'
 end
 
-# Each game
+# Welcome the user, get player choices
+system 'clear'
+prompt "Welcome to Tic-Tac-Toe!"
+sleep 1.5
+
+# Define constants
+INITIAL_MARKER = ' '
+PLAYER_MARKER = choose_user_marker
+COMPUTER_MARKER = PLAYER_MARKER == 'X' ? 'O' : 'X'
+WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
+                [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
+                [[1, 5, 9], [3, 5, 7]] # diagonals
+
+# Main game
 loop do
-  system 'clear'
   scoreboard = initialize_scoreboard
   first = choose_first_player
   # Each Round
   loop do
+    # Start the round
     board = initialize_board
     current_player = first
     display_board(board)
@@ -216,12 +223,15 @@ loop do
     if someone_won?(board)
       prompt "#{detect_winner(board)} won the round!"
       scoreboard[detect_winner(board)] += 1
-      
+
     else
       prompt "It's a tie!"
     end
-    first = alternate_player(first)
+
     display_scoreboard(scoreboard)
+
+    # Swap who goes first
+    first = alternate_player(first)
 
     # Check for overall winner
     if overall_winner?(scoreboard)
