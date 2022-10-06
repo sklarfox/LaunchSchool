@@ -4,19 +4,29 @@ require 'pry-byebug'
 =begin
   TODO items:
   Indicate which squares are which number
-  Impliment alteranting who goes first
+  Allow player choice of marker
 =end
+def prompt(msg)
+  puts "=> #{msg}"
+end
+
+def choose_user_marker
+  loop do
+    prompt "What would you like your marker to be? (X or O)"
+    choice = gets.chomp.strip.upcase
+    return choice if choice == 'X' || choice == 'O'
+    prompt "Sorry, that is an invalid choice."
+  end
+end
 
 INITIAL_MARKER = ' '
-PLAYER_MARKER = 'X'
-COMPUTER_MARKER = 'O'
+PLAYER_MARKER = choose_user_marker
+COMPUTER_MARKER = PLAYER_MARKER == 'X' ? 'O' : 'X'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]] # diagonals
 
-def prompt(msg)
-  puts "=> #{msg}"
-end
+
 
 # rubocop:disable Metrics/AbcSize
 def display_board(brd)
@@ -116,7 +126,7 @@ def joinor(items, delimiter=', ', word='or')
 end
 
 def initialize_scoreboard
-  { 'Player' => 0, 'Computer' => 0, nil => 0 }
+  { 'Player' => 5, 'Computer' => 0, nil => 0 }
 end
 
 def display_scoreboard(scoreboard)
@@ -205,7 +215,6 @@ loop do
     else
       prompt "It's a tie!"
     end
-    # Alternates who went first at end of the round
     first = alternate_player(first)
     display_scoreboard(scoreboard)
 
