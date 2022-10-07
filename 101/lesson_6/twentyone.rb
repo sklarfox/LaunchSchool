@@ -1,15 +1,3 @@
-=begin
-1. Initialize deck DONE
-2. Deal cards to player and dealer DONE
-3. Player turn: hit or stay DONE
-  - repeat until bust or "stay" DONE
-4. If player bust, dealer wins. DONE
-5. Dealer turn: hit or stay DONE
-  - repeat until total >= 17
-6. If dealer bust, player wins. DONE
-7. Compare cards and declare winner.
-=end
-
 require 'pry'
 require 'pry-byebug'
 
@@ -48,7 +36,7 @@ end
 
 def display_player_cards(player)
   cards = player.map(&:join)
-  prompt "Player: #{cards.join(', ')} [Total: #{total(cards)}]"
+  prompt "Player: #{cards.join(', ')} [Total: #{total(player)}]"
 end
 
 def display_dealer_cards(dealer)
@@ -59,14 +47,15 @@ end
 
 def display_all_dealer_cards(dealer)
   cards = dealer.map(&:join)
-  prompt "Dealer: #{cards.join(', ')} [Total: #{total(cards)}]"
+  prompt "Dealer: #{cards.join(', ')} [Total: #{total(dealer)}]"
 end
 
 def total(cards)
   total = 0
   aces = 0
   cards.each do |card|
-    total += VALUES[card[0]]
+    value = POINTS[card[0]]
+    total += value
   end
 
   loop do
@@ -146,11 +135,11 @@ unless busted?(player_hand)
   choice = ''
   loop do
     display_hands(dealer_hand, player_hand, true)
+    sleep 1
     choice = dealer_choice(dealer_hand)
     display_dealer_choice(choice)
-    sleep 0.5
-    deal(deck, dealer_hand)
-    sleep 0.5
+    sleep 2
+    deal(deck, dealer_hand) if choice == 'h'
     break if busted?(dealer_hand) || choice == 's'
   end
 end
