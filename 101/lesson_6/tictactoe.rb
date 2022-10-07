@@ -59,7 +59,7 @@ def initialize_board
 end
 
 def initialize_scoreboard
-  { 'Player' => 5, 'Computer' => 0, nil => 0 } # FLAG TODO
+  { 'Player' => 0, 'Computer' => 0, nil => 0 }
 end
 
 def empty_squares(brd)
@@ -134,8 +134,11 @@ def joinor(items, delimiter=', ', word='or')
 end
 
 def display_scoreboard(scrbrd)
-  puts "| Scoreboard |".center(27)
-  puts "| Player: #{scrbrd['Player']} | Computer: #{scrbrd['Computer']} |"
+  scoreboard = <<-MSG
+        | Scoreboard |
+  | Player: #{scrbrd['Player']} | Computer: #{scrbrd['Computer']} |
+  MSG
+  puts scoreboard
 end
 
 def enter_to_continue
