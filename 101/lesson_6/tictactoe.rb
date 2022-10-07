@@ -64,7 +64,7 @@ def initialize_board
 end
 
 def initialize_scoreboard
-  { 'Player' => 4, 'Computer' => 0, nil => 0 }
+  { 'Player' => 0, 'Computer' => 0, nil => 0 }
 end
 
 def empty_squares(brd)
@@ -195,10 +195,14 @@ end
 def display_rules
   prompt "Players alternate placing markers on the board."
   sleep 3
-  prompt "The first player to have 3 markers in a row (diagonals included), wins the round."
+  prompt "The first player to have 3 markers in a row (diagonals included)" \
+         ", wins the round."
   sleep 5
-  prompt "If the board is full, and neither player has 3 in a row, the result is a tie."
+  prompt "If the board is full, and neither player has 3 in a row, " \
+         "the result is a tie."
   sleep 5
+  prompt "Players alternate who places first between rounds."
+  sleep 4
   prompt "Play continues until one player reaches 5 points."
   sleep 3.5
   enter_to_continue
