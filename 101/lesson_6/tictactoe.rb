@@ -1,8 +1,3 @@
-=begin
-  TODO items:
-
-=end
-
 def prompt(msg)
   puts "=> #{msg}"
 end
