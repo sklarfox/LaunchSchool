@@ -3,8 +3,7 @@ require 'pry-byebug'
 
 =begin
   TODO items:
-  REMOVE TEST CONDITION in initial board (player starts with 5 points)
-  Indicate which squares are which number
+
 =end
 
 def prompt(msg)
