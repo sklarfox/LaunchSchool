@@ -3,25 +3,11 @@
 2. Deal cards to player and dealer DONE
 3. Player turn: hit or stay DONE
   - repeat until bust or "stay" DONE
-4. If player bust, dealer wins.
-5. Dealer turn: hit or stay
+4. If player bust, dealer wins. DONE
+5. Dealer turn: hit or stay DONE
   - repeat until total >= 17
-6. If dealer bust, player wins.
+6. If dealer bust, player wins. DONE
 7. Compare cards and declare winner.
-
-# Problem ----------------------
-
-
-# Examples ---------------------
-
-# Data Structures --------------
-Deck:
-Array [Ace, Ace, Ace, Ace, '1', '1', '1', '1', '2', '2', '2,' '2', ...]
-
-# Algorithm --------------------
-
-# Code -------------------------
-
 =end
 
 require 'pry'
@@ -29,6 +15,11 @@ require 'pry-byebug'
 
 SUITS = ['H', 'D', 'C', 'S']
 VALUES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+POINTS = { 'A' => 11, '2' => 2, '3' => 3, '4' => 4,
+           '5' => 5, '6' => 6, '7' => 7, '8' => 8,
+           '9' => 9, '10' => 10, 'J' => 10, 'Q' => 10, 'K' => 10 }
+MAX_NUM = 21
+DEALER_LIMIT = 17
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -56,40 +47,34 @@ def display_hands(dealer, player, reveal=false)
 end
 
 def display_player_cards(player)
-  cards = player.map do |card|
-    card.join
-  end
+  cards = player.map(&:join)
   prompt "Player: #{cards.join(', ')} [Total: #{total(cards)}]"
 end
 
 def display_dealer_cards(dealer)
-  cards = dealer.map do |card|
-    card.join
-  end
+  cards = dealer.map(&:join)
   cards[0] = '??'
   prompt "Dealer: #{cards.join(', ')}"
 end
 
 def display_all_dealer_cards(dealer)
-  cards = dealer.map do |card|
-    card.join
-  end
+  cards = dealer.map(&:join)
   prompt "Dealer: #{cards.join(', ')} [Total: #{total(cards)}]"
 end
 
-def total(cards) # TODO Impliment Ace 1/11 switch somehow. Get total to account for face values
+def total(cards)
   total = 0
-  value = 0
-  # binding.pry
+  aces = 0
   cards.each do |card|
-    case card[0]
-    when 'A' then value = 11
-    when '2'..'9' then value = card[0].to_i
-    else
-      value = 10
-    end
-    total += value
+    total += VALUES[card[0]]
   end
+
+  loop do
+    break if total <= MAX_NUM || aces == 0
+    total -= 10
+    aces -= 1
+  end
+
   total
 end
 
@@ -111,11 +96,11 @@ def hit_or_stay
 end
 
 def busted?(hand)
-  total(hand) > 21
+  total(hand) > MAX_NUM
 end
 
 def dealer_choice(cards)
-  total(cards) < 17 ? 'h' : 's'
+  total(cards) < DEALER_LIMIT ? 'h' : 's'
 end
 
 def display_dealer_choice(choice)
@@ -126,7 +111,21 @@ def display_dealer_choice(choice)
   end
 end
 
-deck = initialize_deck()
+def display_winner(dealer, player)
+  if busted?(player)
+    prompt "The player busted, dealer wins!"
+  elsif busted?(dealer)
+    prompt "The dealer busted, player wins!"
+  elsif total(dealer) > total(player)
+    prompt "The dealer wins!"
+  elsif total(dealer) == total(player)
+    prompt "Push! Nobody wins."
+  else
+    prompt "The player wins!"
+  end
+end
+
+deck = initialize_deck
 dealer_hand = []
 player_hand = []
 
@@ -136,8 +135,8 @@ initial_deal(deck, dealer_hand, player_hand)
 choice = ''
 loop do
   display_hands(dealer_hand, player_hand)
-  break if total(player_hand) == 21
-  choice = hit_or_stay()
+  break if total(player_hand) == MAX_NUM
+  choice = hit_or_stay
   deal(deck, player_hand) if choice == 'h'
   break if busted?(player_hand) || choice == 's'
 end
@@ -157,3 +156,5 @@ unless busted?(player_hand)
 end
 
 # Compare hands
+display_hands(dealer_hand, player_hand, true)
+display_winner(dealer_hand, player_hand)
