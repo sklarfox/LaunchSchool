@@ -1,6 +1,3 @@
-require 'pry'
-require 'pry-byebug'
-
 =begin
   TODO items:
 
