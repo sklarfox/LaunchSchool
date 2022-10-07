@@ -24,6 +24,9 @@ Array [Ace, Ace, Ace, Ace, '1', '1', '1', '1', '2', '2', '2,' '2', ...]
 
 =end
 
+require 'pry'
+require 'pry-byebug'
+
 SUITS = ['H', 'D', 'C', 'S']
 VALUES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
@@ -35,22 +38,20 @@ def initialize_deck
   VALUES.product(SUITS).shuffle
 end
 
-def deal(deck, hand)
- # hand << deck.shift
-end
-
-def initial_deal(deck, dlr, plr)
+def initial_deal(deck, dealer, player)
+  binding.pry
   2.times do
-    deal(deck, dlr)
-    deal(deck, plr)
+    deal(deck, dealer)
+    deal(deck, player)
   end
 end
 
-def display_hands(dlr, plr)
-  prompt 'Dealer: ' + dlr.join(', ')
-  sleep 1
-  prompt 'Player: ' + plr.join(', ')
-  sleep 1
+def deal(deck, hand)
+  hand << deck.shift
+ end
+
+def display_hands(dealer, player)
+  prompt "Player: #{hand.inspect}"
 end
 
 # Initialize deck and hands
@@ -59,9 +60,5 @@ dealer_hand = []
 player_hand = []
 
 initial_deal(deck, dealer_hand, player_hand)
-display_hands(dealer_hand, player_hand)
 
 # Player turn
-loop do
-
-end
