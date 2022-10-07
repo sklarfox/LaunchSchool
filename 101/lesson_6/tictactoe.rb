@@ -20,21 +20,21 @@ def choose_user_marker
 end
 
 def choose_first_player
-  loop do
+  choice = nil
+  while !choice
     puts "Who will go first? player (p), computer (c), random(r)"
-    choice = gets.chomp.downcase
-    case choice
-    when 'p', 'player' then return 'Player'
-    when 'c', 'computer' then return 'Computer'
-    when 'r', 'random'
-      choice = ['Player', 'Computer'].sample
-      puts "The #{choice.downcase} will go first."
-      sleep 2
-      return choice
+    input = gets.chomp.downcase
+    case input
+    when 'p', 'player' then choice = 'Player'
+    when 'c', 'computer' then choice = 'Computer'
+    when 'r', 'random' then choice = ['Player', 'Computer'].sample
     else
       puts "That is an invalid choice."
     end
   end
+  puts "The #{choice.downcase} will go first."
+  sleep 2
+  choice
 end
 
 # rubocop:disable Metrics/AbcSize
@@ -64,7 +64,7 @@ def initialize_board
 end
 
 def initialize_scoreboard
-  { 'Player' => 0, 'Computer' => 0, nil => 0 }
+  { 'Player' => 4, 'Computer' => 0, nil => 0 }
 end
 
 def empty_squares(brd)
@@ -138,9 +138,9 @@ def joinor(items, delimiter=', ', word='or')
   end
 end
 
-def display_scoreboard(scoreboard)
-  puts "Scoreboard".center(21)
-  puts "Player: #{scoreboard['Player']}, Computer: #{scoreboard['Computer']}"
+def display_scoreboard(scrbrd)
+  puts "| Scoreboard |".center(27)
+  puts "| Player: #{scrbrd['Player']} | Computer: #{scrbrd['Computer']} |"
 end
 
 def enter_to_continue
@@ -184,10 +184,29 @@ def alternate_player(current)
   current == 'Player' ? 'Computer' : 'Player'
 end
 
+def welcome_user
+  prompt "Welcome to Tic-Tac-Toe!"
+  sleep 1.5
+  prompt "Would you like to hear the rules? (y or n)"
+  choice = gets.chomp.strip.downcase
+  display_rules if choice == 'y' || choice == 'yes'
+end
+
+def display_rules
+  prompt "Players alternate placing markers on the board."
+  sleep 3
+  prompt "The first player to have 3 markers in a row (diagonals included), wins the round."
+  sleep 5
+  prompt "If the board is full, and neither player has 3 in a row, the result is a tie."
+  sleep 5
+  prompt "Play continues until one player reaches 5 points."
+  sleep 3.5
+  enter_to_continue
+end
+
 # Welcome the user, get player choices
 system 'clear'
-prompt "Welcome to Tic-Tac-Toe!"
-sleep 1.5
+welcome_user
 
 # Define constants
 INITIAL_MARKER = ' '
@@ -234,6 +253,7 @@ loop do
 
     # Check for overall winner
     if overall_winner?(scoreboard)
+      sleep 1
       if detect_overall_winner(scoreboard) == 'Player'
         prompt "Congratulations, you won the game!"
       else
