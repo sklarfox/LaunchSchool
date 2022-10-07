@@ -1,10 +1,3 @@
-=begin
-TODO
-Consider using HEREDOC for user messages that span multiple lines - just to tidy things up a little.
-Your main game loop was quite long. Can you think of any helper methods you could create to extract out some of this functionality. Hint - your comments break the code up nicely.
-Restrict valid user input to y/n
-=end
-
 def prompt(msg)
   puts "=> #{msg}"
 end
@@ -39,20 +32,23 @@ end
 # rubocop:disable Metrics/AbcSize
 def display_board(brd)
   system 'clear'
-  puts "You're an #{PLAYER_MARKER}, Computer is an #{COMPUTER_MARKER}"
-  puts ""
-  puts "1    |2    |3"
-  puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
-  puts "     |     |"
-  puts "-----+-----+-----"
-  puts "4    |5    |6"
-  puts "  #{brd[4]}  |  #{brd[5]}  |  #{brd[6]}"
-  puts "     |     |"
-  puts "-----+-----+-----"
-  puts "7    |8    |9"
-  puts "  #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}"
-  puts "     |     |"
-  puts ""
+  board = <<-HEREDOC
+  You're an #{PLAYER_MARKER}, Computer is an #{COMPUTER_MARKER}"
+  
+  1    |2    |3
+    #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}
+       |     |
+  -----+-----+-----
+  4    |5    |6
+    #{brd[4]}  |  #{brd[5]}  |  #{brd[6]}
+       |     |
+  -----+-----+-----
+  7    |8    |9
+    #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}
+       |     |
+  
+  HEREDOC
+  puts board
 end
 # rubocop:enable Metrics/AbcSize
 
@@ -258,7 +254,6 @@ loop do
   first = choose_first_player
   # Each Round
   loop do
-    # Start the round
     board = initialize_board
     display_board(board)
 
@@ -273,16 +268,16 @@ loop do
     end
 
     display_scoreboard(scoreboard)
-    
-    first = alternate_player(first)
-    
+
     if overall_winner?(scoreboard)
       display_overall_winner(scoreboard)
       break
     end
 
+    first = alternate_player(first)
     enter_to_continue
   end
+
   break unless play_again?
 end
 
