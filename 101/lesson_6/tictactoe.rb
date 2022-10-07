@@ -1,3 +1,10 @@
+=begin
+TODO
+Consider using HEREDOC for user messages that span multiple lines - just to tidy things up a little.
+Your main game loop was quite long. Can you think of any helper methods you could create to extract out some of this functionality. Hint - your comments break the code up nicely.
+Restrict valid user input to y/n
+=end
+
 def prompt(msg)
   puts "=> #{msg}"
 end
@@ -56,7 +63,7 @@ def initialize_board
 end
 
 def initialize_scoreboard
-  { 'Player' => 0, 'Computer' => 0, nil => 0 }
+  { 'Player' => 5, 'Computer' => 0, nil => 0 } # FLAG TODO
 end
 
 def empty_squares(brd)
@@ -142,16 +149,15 @@ end
 
 def play_again?
   prompt "Play again? (y or n)"
-  answer = gets.chomp
-  answer.downcase == 'y' || answer.downcase == 'yes'
+  user_input_yes?
 end
 
 def overall_winner?(scrbrd)
-  scrbrd['Player'] == 5 || scrbrd['Computer'] == 5
+  scrbrd['Player'] == WINNING_POINTS || scrbrd['Computer'] == WINNING_POINTS
 end
 
 def detect_overall_winner(scrbrd)
-  if scrbrd['Player'] == 5
+  if scrbrd['Player'] == WINNING_POINTS
     'Player'
   else
     'Computer'
@@ -180,8 +186,7 @@ def welcome_user
   prompt "Welcome to Tic-Tac-Toe!"
   sleep 1.5
   prompt "Would you like to hear the rules? (y or n)"
-  choice = gets.chomp.strip.downcase
-  display_rules if choice == 'y' || choice == 'yes'
+  display_rules if user_input_yes?
 end
 
 def display_rules
@@ -200,6 +205,40 @@ def display_rules
   enter_to_continue
 end
 
+def display_overall_winner(scrbrd)
+  if detect_overall_winner(scrbrd) == 'Player'
+    prompt "Congratulations, you won the game!"
+  else
+    prompt "The computer won the game."
+  end
+  sleep 2
+end
+
+def players_place_pieces(board, current_player)
+  loop do
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
+    display_board(board)
+    break if someone_won?(board) || board_full?(board)
+  end
+end
+
+def user_input_yes?
+  choice = false
+  loop do
+    input = gets.chomp.downcase
+    if input == 'y' || input == 'yes'
+      choice = true
+      break
+    elsif input == 'n' || input == 'no'
+      break
+    else
+      prompt "Sorry, that's an invalid choice."
+    end
+  end
+  choice
+end
+
 # Welcome the user, get player choices
 system 'clear'
 welcome_user
@@ -211,6 +250,7 @@ COMPUTER_MARKER = PLAYER_MARKER == 'X' ? 'O' : 'X'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]] # diagonals
+WINNING_POINTS = 5
 
 # Main game
 loop do
@@ -220,44 +260,27 @@ loop do
   loop do
     # Start the round
     board = initialize_board
-    current_player = first
     display_board(board)
 
-    # Players place pieces loop
-    loop do
-      display_board(board)
-      place_piece!(board, current_player)
-      current_player = alternate_player(current_player)
-      break if someone_won?(board) || board_full?(board)
-    end
+    players_place_pieces(board, first)
 
-    display_board(board)
-
-    # Add score if someone won
     if someone_won?(board)
-      prompt "#{detect_winner(board)} won the round!"
-      scoreboard[detect_winner(board)] += 1
-
+      winner = detect_winner(board)
+      prompt "#{winner} won the round!"
+      scoreboard[winner] += 1
     else
       prompt "It's a tie!"
     end
 
     display_scoreboard(scoreboard)
-
-    # Swap who goes first
+    
     first = alternate_player(first)
-
-    # Check for overall winner
+    
     if overall_winner?(scoreboard)
-      sleep 1
-      if detect_overall_winner(scoreboard) == 'Player'
-        prompt "Congratulations, you won the game!"
-      else
-        prompt "The computer won the game."
-      end
-      sleep 2
+      display_overall_winner(scoreboard)
       break
     end
+
     enter_to_continue
   end
   break unless play_again?
