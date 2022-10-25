@@ -5,15 +5,23 @@
   problem: Take an array of integers, and sum up the totals of each subsequent digit and all preceding digits
 
   initialize a total variable to 0
-  iterate through each item in the array with index
-    sum up the digits in the array from 0 to the index, and add to the total sum
+  initialize a size counter variable to 1
+  select size elements from the array starting with index 0
+  sum those digits
+  add that sum to the total
+  increment the size counter
+  repeat until size is equal to the size of the array
+
   return the final sum
 =end
 
 def sum_of_sums(digits)
   total = 0
-  digits.each.with_index do |_digit, idx|
-    total += digits[0, idx + 1].inject(:+)
+  size = 1
+  loop do
+    total += digits[0, size].inject(:+)
+    size += 1
+    break if size > digits.size
   end
   total
 end
