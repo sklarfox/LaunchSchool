@@ -1,20 +1,17 @@
 =begin
   TODO wishlist
-    show rules?
-    implement personalities
-    implement choice of opponent
-    move things into module
-    clear all TODOs
-    method access control
+    History as a class variable?
+
+    todo before review
+    Change points to win
+        clear all TODOs
 =end
 
 class Player
-  attr_accessor :move, :name, :score, :history
+  attr_accessor :move, :name, :score
 
   def initialize
-    set_name
     @score = 0
-    @history = []
   end
 
   def reset_score
@@ -24,13 +21,14 @@ class Player
   def increment_score
     @score += 1
   end
-
-  def log_move(move)
-    history << move.to_s
-  end
 end
 
 class Human < Player
+  def initialize
+    set_name
+    super
+  end
+  
   def set_name
     puts "Hi there! What is your name?"
     n = ''
@@ -52,19 +50,59 @@ class Human < Player
       puts "Sorry, invalid choice."
     end
     self.move = Move.new(choice)
-    log_move(move)
   end
 end
 
 class Computer < Player
+ # Is this helpful to have in the heirarchy if no methods in it?
+ # Should all personalities inherit directly from Player?
+end
 
-  def set_name
-    self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Lappy386'].sample
+module Personalities
+  class Hal < Computer # Random
+    def initialize
+      @name = 'Hal'
+      super
+    end
+  
+    def choose
+      self.move = Move.new(Move::VALUES.sample)
+    end
   end
 
-  def choose
-    self.move = Move.new(Move::VALUES.sample)
-    log_move(move)
+  class Rocky < Computer # Always rock
+    def initialize
+      @name = 'Rocky Balboa'
+      super
+    end
+    
+    def choose
+      self.move = Move.new(Move::VALUES[0])
+    end
+  end
+
+  class Compy386 < Computer # Mostly Spock sometimes Lizard, rarely Paper
+    def initialize
+      @name = 'Compy 386'
+      super
+    end
+
+    def choose
+      choice = [1, 3, 3, 3, 3, 3, 4, 4, 4].sample
+      self.move = Move.new(Move::VALUES[choice])
+    end
+  end
+
+  class Romulan < Computer # Always picks a losing move to spock
+    def initialize
+      @name = 'The Romulan'
+      super
+    end
+
+    def choose
+      choice = [0, 2].sample
+      self.move = Move.new(Move::VALUES[choice])
+    end
   end
 end
 
@@ -106,28 +144,49 @@ class Move
   end
 end
 
-class RPSGame
-  PROMPT_DELAY = 0.5
-  WINNING_SCORE = 1
-  attr_accessor :human, :computer
 
-  def initialize
-    system 'clear'
-    @human = Human.new
-    # @computer = Computer.new
+class MatchLog
+  attr_accessor :log_arr, :human_name, :computer_name, :winner
+  def initialize(human, computer)
+    @log_arr = Array.new
+    @human_name = human.name
+    @computer_name = computer.name
   end
 
-  def user_choice
-    loop do
-      answer = gets.chomp.downcase
-      return answer if ['y', 'n'].include? answer
-      puts "Sorry, response must be y or n."
+  def log_moves(human, computer)
+    log_arr << [human.move, computer.move]
+  end
+
+  def log_winner(winner)
+    @winner = winner.name
+  end
+
+  def display_log
+    puts log_arr
+    puts @winner
+  end
+
+  def print
+    rounds = log_arr.size
+    (0...rounds).each do |round|
+      puts "Round #{round + 1}:"
+      puts "#{human_name} played #{log_arr[round].first}"
+      puts "#{computer_name} played #{log_arr[round].last}"
+      puts ""
+      sleep Displayable::PROMPT_DELAY
     end
+    puts "The winner was #{winner}!"
+    puts "Enter to continue"
+    gets
   end
+end
+
+module Displayable
+  PROMPT_DELAY = 0.1
 
   def display_welcome_message
     puts "Welcome #{human.name}, to Rock, Paper, Scissors!"
-    sleep RPSGame::PROMPT_DELAY
+    sleep RPSGame::PROMPT_DELAY * 2
   end
 
   def display_goodbye_message
@@ -148,31 +207,6 @@ class RPSGame
     sleep RPSGame::PROMPT_DELAY * 2
   end
 
-  def play_again?
-    puts "Would you like to play again? (y/n)"
-    answer = user_choice
-
-    return true if answer.downcase == 'y'
-    return false if answer.downcase == 'n'
-  end
-
-  def reset_scores
-    human.reset_score
-    computer.reset_score
-  end
-
-  def detect_round_winner
-    if human.move > computer.move
-      human
-    elsif human.move < computer.move
-      computer
-    end
-  end
-
-  def increment_winner_score
-    detect_round_winner.increment_score
-  end
-
   def display_scores
     system 'clear'
     scores_line = "| #{human.name}: #{human.score} | #{computer.name}: #{computer.score} |"
@@ -185,27 +219,10 @@ class RPSGame
     puts horizontal
   end
 
-  def detect_overall_winner
-    return human if human.score == RPSGame::WINNING_SCORE
-    return computer if computer.score == RPSGame::WINNING_SCORE
-  end
-
   def display_overall_winner
     puts "#{detect_overall_winner.name} won the game!"
     puts "Congratulations!" if detect_overall_winner == human
     puts "Better luck next time!" if detect_overall_winner == computer
-  end
-
-  def play_until_winner
-    loop do
-      display_scores
-      human.choose
-      computer.choose
-      increment_winner_score if detect_round_winner
-      display_round_winner
-      break if detect_overall_winner
-      system 'clear'
-    end
   end
 
   def display_history
@@ -218,54 +235,154 @@ class RPSGame
     end
   end
 
-  def show_history?
-    puts "Would you like to see a history of both player choices? (y/n)"
-    true if user_choice == 'y'
-  end
-
-  def choose_opponent
-    # TODO Validate User Input
-    puts "Please choose an opponent:"
-    
-    choice = gets.chomp
-
-  end
-
   def display_opponent
     puts "You will be playing against #{computer.name}"
+    puts "Press enter to continue."
+    gets
+  end
+
+  def display_opponent_choices
+    system 'clear'
+    puts "Please choose an opponent:"
+    counter = 1
+    RPSGame::BOT_POOL.each.with_index do |bot| 
+      puts "#{counter}: #{bot.name}"
+      counter += 1
+    end
+    puts "#{counter}: Random"
+  end
+
+  def display_logbook
+    logbook.each.with_index do |match, idx| 
+      puts "***** Match #{idx + 1} *****"
+      match.print 
+    end
+  end
+  
+end
+
+module Scoreable
+  def reset_scores
+    human.reset_score
+    computer.reset_score
+  end
+
+  def detect_overall_winner
+    return human if human.score == RPSGame::WINNING_SCORE
+    return computer if computer.score == RPSGame::WINNING_SCORE
+  end
+
+  def increment_winner_score
+    detect_round_winner.increment_score
+  end
+
+  def detect_round_winner
+    if human.move > computer.move
+      human
+    elsif human.move < computer.move
+      computer
+    end
+  end
+
+
+end
+
+module Chooseable
+  def user_choice?
+    loop do
+      answer = gets.chomp.downcase
+      return true if answer == 'y'
+      return false if answer == 'n'
+      puts "Sorry, response must be y or n."
+    end
+  end
+
+  def play_again?
+    puts "Would you like to play again? (y/n)"
+    user_choice?
+  end
+
+  def show_logbook?
+    puts "Would you like to see a history of all matches played? (y/n)"
+    user_choice?
+  end
+
+  def set_opponent
+    valid_choices = (1..RPSGame::BOT_POOL.size + 1)
+    choice = nil
+    loop do
+      choice = gets.chomp.to_i
+      break if valid_choices.cover?(choice)
+      puts "Sorry, the value must be from 1 to #{valid_choices.last}"
+    end
+    if choice == valid_choices.last
+      @computer = RPSGame::BOT_POOL.sample
+    else
+      @computer = RPSGame::BOT_POOL[choice - 1]
+    end
+  end
+end
+
+class RPSGame
+  WINNING_SCORE = 1
+  BOT_POOL = [Personalities::Hal.new,
+              Personalities::Compy386.new,
+              Personalities::Rocky.new,
+              Personalities::Romulan.new
+             ]
+  include Displayable
+  include Chooseable
+  include Scoreable
+
+  attr_accessor :human, :computer, :logbook, :match_log
+
+  def initialize
+    system 'clear'
+    @human = Human.new
+    @logbook = []
+  end
+
+  def play_until_winner
+    loop do
+      display_scores
+      human.choose
+      computer.choose
+      match_log.log_moves(human, computer)
+      increment_winner_score if detect_round_winner
+      display_round_winner
+      break if detect_overall_winner
+      system 'clear'
+    end
+    match_log.log_winner(detect_overall_winner)
+  end
+
+  def initialize_new_match
+    display_opponent_choices
+    set_opponent
+    display_opponent
+    @match_log = MatchLog.new(human, computer)
+    reset_scores
+  end
+
+  def save_match_log
+    @logbook << match_log
   end
 
   def play
     system 'clear'
     display_welcome_message
     loop do
-      choose_opponent
-      display_opponent
-      reset_scores
+      initialize_new_match
       play_until_winner
       display_scores
       display_overall_winner
+      save_match_log
       break unless play_again?
     end
-    display_history if show_history?
+    display_logbook if show_logbook?
     display_goodbye_message
+   
   end
 end
 
 RPSGame.new.play
-
-
-=begin
-  personalities as new classes
-    have to redo history
-    how to generate new Computer object based off user input? (initialize all bots into a hash and select from there?)
-    do this!
-      case statement 
-
-  personalities as a state in Computer
-    history won't have mention of the name
-    easier to modify personality based off user input
-
-
-    move things from RPS game class into modules
-=end
