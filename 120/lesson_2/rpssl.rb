@@ -166,27 +166,34 @@ class MatchLog
     puts @winner
   end
 
-  def print
+  def print(match_number)
     rounds = log_arr.size
     (0...rounds).each do |round|
+      system 'clear'
+      puts "***** Match #{match_number} *****"
       puts "Round #{round + 1}:"
       puts "#{human_name} played #{log_arr[round].first}"
       puts "#{computer_name} played #{log_arr[round].last}"
+      next if round == rounds - 1
       puts ""
-      sleep Displayable::PROMPT_DELAY
+      puts "Enter to continue"
+      gets
     end
-    puts "The winner was #{winner}!"
-    puts "Enter to continue"
-    gets
+    puts "\n***** The match winner was #{winner}! *****\n\n"
   end
 end
 
 module Displayable
-  PROMPT_DELAY = 0.1
+  PROMPT_DELAY = 0
+
+  def enter_to_continue
+    puts "Enter to continue"
+    gets
+  end
 
   def display_welcome_message
-    puts "Welcome #{human.name}, to Rock, Paper, Scissors!"
-    sleep RPSGame::PROMPT_DELAY * 2
+    puts "Welcome, #{human.name}, to Rock, Paper, Scissors!"
+    enter_to_continue
   end
 
   def display_goodbye_message
@@ -196,15 +203,16 @@ module Displayable
 
   def display_round_winner
     puts "#{human.name} chose #{human.move}."
-    sleep RPSGame::PROMPT_DELAY
+    sleep PROMPT_DELAY
     puts "#{computer.name} chose #{computer.move}."
-    sleep RPSGame::PROMPT_DELAY
+    sleep PROMPT_DELAY
     if detect_round_winner
       puts "#{detect_round_winner.name} won the round!"
     else
       puts "It's a tie!"
     end
-    sleep RPSGame::PROMPT_DELAY * 2
+    sleep PROMPT_DELAY
+    enter_to_continue
   end
 
   def display_scores
@@ -223,16 +231,6 @@ module Displayable
     puts "#{detect_overall_winner.name} won the game!"
     puts "Congratulations!" if detect_overall_winner == human
     puts "Better luck next time!" if detect_overall_winner == computer
-  end
-
-  def display_history
-    number_of_rounds = human.history.size
-    number_of_rounds.times do |n|
-      puts "Round #{n + 1}:"
-      puts "#{human.name} chose #{human.history[n]}"
-      puts "#{computer.name} chose #{computer.history[n]}"
-      sleep PROMPT_DELAY * 3
-    end
   end
 
   def display_opponent
@@ -254,8 +252,10 @@ module Displayable
 
   def display_logbook
     logbook.each.with_index do |match, idx| 
-      puts "***** Match #{idx + 1} *****"
-      match.print 
+      system 'clear'
+      match.print(idx + 1)
+      enter_to_continue
+      system 'clear'
     end
   end
   
@@ -324,7 +324,7 @@ module Chooseable
 end
 
 class RPSGame
-  WINNING_SCORE = 1
+  WINNING_SCORE = 5
   BOT_POOL = [Personalities::Hal.new,
               Personalities::Compy386.new,
               Personalities::Rocky.new,
@@ -365,7 +365,7 @@ class RPSGame
   end
 
   def save_match_log
-    @logbook << match_log
+    logbook << match_log
   end
 
   def play
@@ -381,7 +381,6 @@ class RPSGame
     end
     display_logbook if show_logbook?
     display_goodbye_message
-   
   end
 end
 
