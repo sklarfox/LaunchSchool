@@ -37,7 +37,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose rock(r), paper(p), or scissors(sc):"
+      puts "Please choose rock(r), paper(p), scissors(sc), spock(sp), or lizard(l):"
       choice = gets.chomp
       break if Move::VALUES.include?(choice) || Move::ABRV.key?(choice)
       puts "Sorry, invalid choice."
@@ -58,11 +58,20 @@ end
 
 class Move
   VALUES = ['rock', 'paper', 'scissors', 'spock', 'lizard']
+
   ABRV = { 'r' => 'rock',
            'p' => 'paper',
            'sc' => 'scissors',
            'sp' => 'spock',
            'l' => 'lizard' }
+
+  DEFEATS = { 'rock' => ['lizard', 'scissors'],
+              'paper' => ['rock', 'spock'],
+              'scissors' => ['lizard', 'paper'],
+              'spock' => ['rock', 'scissors'],
+              'lizard' => ['spock', 'paper'] }
+
+  attr_reader :value
 
   def initialize(value)
     @value = if Move::VALUES.include?(value)
@@ -72,28 +81,12 @@ class Move
              end
   end
 
-  def scissors?
-    @value == 'scissors' || 'sc'
-  end
-
-  def paper?
-    @value == 'paper' || 'p'
-  end
-
-  def rock?
-    @value == 'rock' || 'r'
-  end
-
   def >(other_move)
-    (rock? && other_move.scissors?) ||
-      (paper? && other_move.rock?) ||
-      (scissors? && other_move.paper?)
+    Move::DEFEATS[value].include?(other_move.value)
   end
 
   def <(other_move)
-    (rock? && other_move.paper?) ||
-      (paper? && other_move.scissors?) ||
-      (scissors? && other_move.rock?)
+    Move::DEFEATS[other_move.value].include?(value)
   end
 
   def to_s
@@ -120,12 +113,12 @@ class RPSGame
   end
 
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors!"
+    puts "Welcome #{human.name}, to Rock, Paper, Scissors!"
     sleep RPSGame::PROMPT_DELAY
   end
 
   def display_goodbye_message
-    puts "Thank you for playing Rock, Paper, Scissors. Good bye!"
+    puts "Thank you for playing Rock, Paper, Scissors, Spock, Lizard. Good bye!"
   end
 
   def display_round_winner
