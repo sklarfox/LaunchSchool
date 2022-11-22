@@ -262,14 +262,16 @@ module Displayable
 end
 
 module Scoreable
+  WINNING_SCORE = 5
+
   def reset_scores
     human.reset_score
     computer.reset_score
   end
 
   def detect_overall_winner
-    return human if human.score == RPSGame::WINNING_SCORE
-    return computer if computer.score == RPSGame::WINNING_SCORE
+    return human if human.score == WINNING_SCORE
+    return computer if computer.score == WINNING_SCORE
   end
 
   def increment_winner_score
@@ -324,7 +326,6 @@ module Chooseable
 end
 
 class RPSGame
-  WINNING_SCORE = 5
   BOT_POOL = [Personalities::Hal.new,
               Personalities::Compy386.new,
               Personalities::Rocky.new,
