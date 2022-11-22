@@ -1,15 +1,20 @@
 =begin
   TODO wishlist
-    add rules
-    move  constants into class?
+    show rules?
+    implement personalities
+    implement choice of opponent
+    move things into module
+    clear all TODOs
+    method access control
 =end
 
 class Player
-  attr_accessor :move, :name, :score
+  attr_accessor :move, :name, :score, :history
 
   def initialize
     set_name
     @score = 0
+    @history = []
   end
 
   def reset_score
@@ -18,6 +23,10 @@ class Player
 
   def increment_score
     @score += 1
+  end
+
+  def log_move(move)
+    history << move.to_s
   end
 end
 
@@ -43,16 +52,19 @@ class Human < Player
       puts "Sorry, invalid choice."
     end
     self.move = Move.new(choice)
+    log_move(move)
   end
 end
 
 class Computer < Player
+
   def set_name
     self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Lappy386'].sample
   end
 
   def choose
     self.move = Move.new(Move::VALUES.sample)
+    log_move(move)
   end
 end
 
@@ -100,14 +112,15 @@ class RPSGame
   attr_accessor :human, :computer
 
   def initialize
+    system 'clear'
     @human = Human.new
-    @computer = Computer.new
+    # @computer = Computer.new
   end
 
   def user_choice
     loop do
-      answer = gets.chomp
-      return answer if ['y', 'n'].include? answer.downcase
+      answer = gets.chomp.downcase
+      return answer if ['y', 'n'].include? answer
       puts "Sorry, response must be y or n."
     end
   end
@@ -118,6 +131,7 @@ class RPSGame
   end
 
   def display_goodbye_message
+    system 'clear'
     puts "Thank you for playing Rock, Paper, Scissors, Spock, Lizard. Good bye!"
   end
 
@@ -194,19 +208,64 @@ class RPSGame
     end
   end
 
+  def display_history
+    number_of_rounds = human.history.size
+    number_of_rounds.times do |n|
+      puts "Round #{n + 1}:"
+      puts "#{human.name} chose #{human.history[n]}"
+      puts "#{computer.name} chose #{computer.history[n]}"
+      sleep PROMPT_DELAY * 3
+    end
+  end
+
+  def show_history?
+    puts "Would you like to see a history of both player choices? (y/n)"
+    true if user_choice == 'y'
+  end
+
+  def choose_opponent
+    # TODO Validate User Input
+    puts "Please choose an opponent:"
+    
+    choice = gets.chomp
+
+  end
+
+  def display_opponent
+    puts "You will be playing against #{computer.name}"
+  end
+
   def play
     system 'clear'
     display_welcome_message
     loop do
+      choose_opponent
+      display_opponent
       reset_scores
       play_until_winner
       display_scores
       display_overall_winner
       break unless play_again?
     end
+    display_history if show_history?
     display_goodbye_message
   end
 end
 
-system 'clear'
 RPSGame.new.play
+
+
+=begin
+  personalities as new classes
+    have to redo history
+    how to generate new Computer object based off user input? (initialize all bots into a hash and select from there?)
+    do this!
+      case statement 
+
+  personalities as a state in Computer
+    history won't have mention of the name
+    easier to modify personality based off user input
+
+
+    move things from RPS game class into modules
+=end
