@@ -1,12 +1,3 @@
-=begin
-  TODO wishlist
-    History as a class variable?
-
-    todo before review
-    Change points to win
-        clear all TODOs
-=end
-
 class Player
   attr_accessor :move, :name, :score
 
@@ -28,7 +19,7 @@ class Human < Player
     set_name
     super
   end
-  
+
   def set_name
     puts "Hi there! What is your name?"
     n = ''
@@ -44,7 +35,8 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose rock(r), paper(p), scissors(sc), spock(sp), or lizard(l):"
+      puts "Please choose rock(r), paper(p), scissors(sc), "\
+           "spock(sp), or lizard(l):"
       choice = gets.chomp
       break if Move::VALUES.include?(choice) || Move::ABRV.key?(choice)
       puts "Sorry, invalid choice."
@@ -54,8 +46,8 @@ class Human < Player
 end
 
 class Computer < Player
- # Is this helpful to have in the heirarchy if no methods in it?
- # Should all personalities inherit directly from Player?
+  # Is this helpful to have in the heirarchy if no methods in it?
+  # Should all personalities inherit directly from Player?
 end
 
 module Personalities
@@ -64,7 +56,7 @@ module Personalities
       @name = 'Hal'
       super
     end
-  
+
     def choose
       self.move = Move.new(Move::VALUES.sample)
     end
@@ -75,7 +67,7 @@ module Personalities
       @name = 'Rocky Balboa'
       super
     end
-    
+
     def choose
       self.move = Move.new(Move::VALUES[0])
     end
@@ -144,9 +136,86 @@ class Move
   end
 end
 
+module Displayable
+  PROMPT_DELAY = 0
+
+  def enter_to_continue
+    puts "Enter to continue"
+    gets
+  end
+
+  def display_welcome_message
+    puts "Welcome, #{human.name}, to Rock, Paper, Scissors!"
+    enter_to_continue
+  end
+
+  def display_goodbye_message
+    system 'clear'
+    puts "Thank you for playing Rock, Paper, Scissors, Spock, Lizard. Good bye!"
+  end
+
+  def display_round_winner
+    puts "\n#{human.name} chose #{human.move}."
+    puts "#{computer.name} chose #{computer.move}.\n\n"
+    if detect_round_winner
+      puts "#{detect_round_winner.name} won the round!\n\n"
+    else
+      puts "It's a tie!\n\n"
+    end
+    sleep PROMPT_DELAY
+    enter_to_continue
+  end
+
+  def display_scores
+    system 'clear'
+    scores_line = "| #{@human.name}: #{@human.score} |"\
+                  " #{@computer.name}: #{@computer.score} |"
+    width = scores_line.length - 2
+    horizontal = "+#{'-' * width}+"
+    puts horizontal
+    puts "|#{'Scoreboard'.center(width)}|"
+    puts horizontal
+    puts scores_line
+    puts horizontal
+  end
+
+  def display_overall_winner
+    puts "#{detect_overall_winner.name} won the game!"
+    puts "\nCongratulations!" if detect_overall_winner == human
+    puts "\nBetter luck next time!" if detect_overall_winner == computer
+  end
+
+  def display_opponent
+    puts "You will be playing against #{computer.name}"
+    enter_to_continue
+  end
+
+  def display_personality_choices
+    system 'clear'
+    puts "Please choose an opponent:"
+    counter = 1
+    RPSGame::BOT_POOL.each do |bot|
+      puts "#{counter}: #{bot.name}"
+      counter += 1
+    end
+    puts "#{counter}: Random"
+  end
+
+  def display_logbook
+    logbook.each.with_index do |match, idx|
+      system 'clear'
+      match.print(idx + 1)
+      enter_to_continue
+      system 'clear'
+    end
+  end
+end
 
 class MatchLog
-  attr_accessor :log_arr, :human_name, :computer_name, :winner
+  attr_accessor :log_arr, :winner
+
+  include Displayable
+
   def initialize(human, computer)
     @log_arr = Array.new
     @human_name = human.name
@@ -170,95 +239,14 @@ class MatchLog
     rounds = log_arr.size
     (0...rounds).each do |round|
       system 'clear'
-      puts "***** Match #{match_number} *****"
-      puts "Round #{round + 1}:"
-      puts "#{human_name} played #{log_arr[round].first}"
-      puts "#{computer_name} played #{log_arr[round].last}"
+      puts "***** Match #{match_number} *****\nRound #{round + 1}:\n" \
+           "#{@human_name} played #{log_arr[round].first}\n" \
+           "#{@computer_name} played #{log_arr[round].last}\n"
       next if round == rounds - 1
-      puts ""
-      puts "Enter to continue"
-      gets
+      enter_to_continue
     end
     puts "\n***** The match winner was #{winner}! *****\n\n"
   end
-end
-
-module Displayable
-  PROMPT_DELAY = 0
-
-  def enter_to_continue
-    puts "Enter to continue"
-    gets
-  end
-
-  def display_welcome_message
-    puts "Welcome, #{human.name}, to Rock, Paper, Scissors!"
-    enter_to_continue
-  end
-
-  def display_goodbye_message
-    system 'clear'
-    puts "Thank you for playing Rock, Paper, Scissors, Spock, Lizard. Good bye!"
-  end
-
-  def display_round_winner
-    puts "#{human.name} chose #{human.move}."
-    sleep PROMPT_DELAY
-    puts "#{computer.name} chose #{computer.move}."
-    sleep PROMPT_DELAY
-    if detect_round_winner
-      puts "#{detect_round_winner.name} won the round!"
-    else
-      puts "It's a tie!"
-    end
-    sleep PROMPT_DELAY
-    enter_to_continue
-  end
-
-  def display_scores
-    system 'clear'
-    scores_line = "| #{human.name}: #{human.score} | #{computer.name}: #{computer.score} |"
-    width = scores_line.length - 2
-    horizontal = "+#{'-' * width}+"
-    puts horizontal
-    puts "|#{'Scoreboard'.center(width)}|"
-    puts horizontal
-    puts scores_line
-    puts horizontal
-  end
-
-  def display_overall_winner
-    puts "#{detect_overall_winner.name} won the game!"
-    puts "Congratulations!" if detect_overall_winner == human
-    puts "Better luck next time!" if detect_overall_winner == computer
-  end
-
-  def display_opponent
-    puts "You will be playing against #{computer.name}"
-    puts "Press enter to continue."
-    gets
-  end
-
-  def display_opponent_choices
-    system 'clear'
-    puts "Please choose an opponent:"
-    counter = 1
-    RPSGame::BOT_POOL.each.with_index do |bot| 
-      puts "#{counter}: #{bot.name}"
-      counter += 1
-    end
-    puts "#{counter}: Random"
-  end
-
-  def display_logbook
-    logbook.each.with_index do |match, idx| 
-      system 'clear'
-      match.print(idx + 1)
-      enter_to_continue
-      system 'clear'
-    end
-  end
-  
 end
 
 module Scoreable
@@ -285,8 +273,6 @@ module Scoreable
       computer
     end
   end
-
-
 end
 
 module Chooseable
@@ -309,19 +295,17 @@ module Chooseable
     user_choice?
   end
 
-  def set_opponent
-    valid_choices = (1..RPSGame::BOT_POOL.size + 1)
+  def choose_personality
     choice = nil
     loop do
       choice = gets.chomp.to_i
-      break if valid_choices.cover?(choice)
-      puts "Sorry, the value must be from 1 to #{valid_choices.last}"
+      break if @valid_personality_choices.cover?(choice)
+      puts "Sorry, the value must be from 1 to " \
+           "#{@valid_personality_choices.last}"
     end
-    if choice == valid_choices.last
-      @computer = RPSGame::BOT_POOL.sample
-    else
-      @computer = RPSGame::BOT_POOL[choice - 1]
-    end
+    self.computer = RPSGame::BOT_POOL.sample
+    return if choice == @valid_personality_choices.last
+    self.computer = RPSGame::BOT_POOL[choice - 1]
   end
 end
 
@@ -329,8 +313,7 @@ class RPSGame
   BOT_POOL = [Personalities::Hal.new,
               Personalities::Compy386.new,
               Personalities::Rocky.new,
-              Personalities::Romulan.new
-             ]
+              Personalities::Romulan.new]
   include Displayable
   include Chooseable
   include Scoreable
@@ -341,6 +324,7 @@ class RPSGame
     system 'clear'
     @human = Human.new
     @logbook = []
+    @valid_personality_choices = (1..RPSGame::BOT_POOL.size + 1)
   end
 
   def play_until_winner
@@ -352,14 +336,13 @@ class RPSGame
       increment_winner_score if detect_round_winner
       display_round_winner
       break if detect_overall_winner
-      system 'clear'
     end
     match_log.log_winner(detect_overall_winner)
   end
 
   def initialize_new_match
-    display_opponent_choices
-    set_opponent
+    display_personality_choices
+    choose_personality
     display_opponent
     @match_log = MatchLog.new(human, computer)
     reset_scores
@@ -369,15 +352,20 @@ class RPSGame
     logbook << match_log
   end
 
+  def end_of_match
+    system 'clear'
+    display_scores
+    display_overall_winner
+    save_match_log
+  end
+
   def play
     system 'clear'
     display_welcome_message
     loop do
       initialize_new_match
       play_until_winner
-      display_scores
-      display_overall_winner
-      save_match_log
+      end_of_match
       break unless play_again?
     end
     display_logbook if show_logbook?
