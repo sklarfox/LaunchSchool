@@ -45,13 +45,8 @@ class Human < Player
   end
 end
 
-class Computer < Player
-  # Is this helpful to have in the heirarchy if no methods in it?
-  # Should all personalities inherit directly from Player?
-end
-
 module Personalities
-  class Hal < Computer # Random
+  class Hal < Player # Random
     def initialize
       @name = 'Hal'
       super
@@ -62,7 +57,7 @@ module Personalities
     end
   end
 
-  class Rocky < Computer # Always rock
+  class Rocky < Player # Always rock
     def initialize
       @name = 'Rocky Balboa'
       super
@@ -73,7 +68,7 @@ module Personalities
     end
   end
 
-  class Compy386 < Computer # Mostly Spock sometimes Lizard, rarely Paper
+  class Compy386 < Player # Mostly Spock, sometimes Lizard, rarely Paper
     def initialize
       @name = 'Compy 386'
       super
@@ -85,7 +80,7 @@ module Personalities
     end
   end
 
-  class Romulan < Computer # Always picks a losing move to spock
+  class Romulan < Player # Always picks a losing move to spock
     def initialize
       @name = 'The Romulan'
       super
@@ -211,44 +206,6 @@ module Displayable
   end
 end
 
-class MatchLog
-  attr_accessor :log_arr, :winner
-
-  include Displayable
-
-  def initialize(human, computer)
-    @log_arr = Array.new
-    @human_name = human.name
-    @computer_name = computer.name
-  end
-
-  def log_moves(human, computer)
-    log_arr << [human.move, computer.move]
-  end
-
-  def log_winner(winner)
-    @winner = winner.name
-  end
-
-  def display_log
-    puts log_arr
-    puts @winner
-  end
-
-  def print(match_number)
-    rounds = log_arr.size
-    (0...rounds).each do |round|
-      system 'clear'
-      puts "***** Match #{match_number} *****\nRound #{round + 1}:\n" \
-           "#{@human_name} played #{log_arr[round].first}\n" \
-           "#{@computer_name} played #{log_arr[round].last}\n"
-      next if round == rounds - 1
-      enter_to_continue
-    end
-    puts "\n***** The match winner was #{winner}! *****\n\n"
-  end
-end
-
 module Scoreable
   WINNING_SCORE = 5
 
@@ -306,6 +263,44 @@ module Chooseable
     self.computer = RPSGame::BOT_POOL.sample
     return if choice == @valid_personality_choices.last
     self.computer = RPSGame::BOT_POOL[choice - 1]
+  end
+end
+
+class MatchLog
+  attr_accessor :log_arr, :winner
+
+  include Displayable
+
+  def initialize(human, computer)
+    @log_arr = Array.new
+    @human_name = human.name
+    @computer_name = computer.name
+  end
+
+  def log_moves(human, computer)
+    log_arr << [human.move, computer.move]
+  end
+
+  def log_winner(winner)
+    @winner = winner.name
+  end
+
+  def display_log
+    puts log_arr
+    puts @winner
+  end
+
+  def print(match_number)
+    rounds = log_arr.size
+    (0...rounds).each do |round|
+      system 'clear'
+      puts "***** Match #{match_number} *****\nRound #{round + 1}:\n" \
+           "#{@human_name} played #{log_arr[round].first}\n" \
+           "#{@computer_name} played #{log_arr[round].last}\n"
+      next if round == rounds - 1
+      enter_to_continue
+    end
+    puts "\n***** The match winner was #{winner}! *****\n\n"
   end
 end
 
