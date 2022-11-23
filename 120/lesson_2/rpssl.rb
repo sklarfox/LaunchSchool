@@ -1,5 +1,5 @@
 class Player
-  attr_accessor :move, :name, :score
+  attr_reader :name, :move, :score
 
   def initialize
     @score = 0
@@ -12,6 +12,10 @@ class Player
   def increment_score
     @score += 1
   end
+
+  private
+
+  attr_writer :name, :move, :score
 end
 
 class Human < Player
@@ -94,6 +98,8 @@ module Personalities
 end
 
 class Move
+  attr_reader :value
+
   VALUES = ['rock', 'paper', 'scissors', 'spock', 'lizard']
 
   ABRV = { 'r' => 'rock',
@@ -107,8 +113,6 @@ class Move
               'scissors' => ['lizard', 'paper'],
               'spock' => ['rock', 'scissors'],
               'lizard' => ['spock', 'paper'] }
-
-  attr_reader :value
 
   def initialize(value)
     @value = if Move::VALUES.include?(value)
@@ -140,7 +144,7 @@ module Displayable
   end
 
   def display_welcome_message
-    puts "Welcome, #{human.name}, to Rock, Paper, Scissors!"
+    puts "Welcome, #{human.name}, to Rock, Paper, Scissors, Spock, Lizard!"
     enter_to_continue
   end
 
@@ -267,7 +271,7 @@ module Chooseable
 end
 
 class MatchLog
-  attr_accessor :log_arr, :winner
+  attr_reader :log_arr, :winner
 
   include Displayable
 
@@ -302,6 +306,10 @@ class MatchLog
     end
     puts "\n***** The match winner was #{winner}! *****\n\n"
   end
+
+  private
+
+  attr_writer :log_arr, :winner
 end
 
 class RPSGame
