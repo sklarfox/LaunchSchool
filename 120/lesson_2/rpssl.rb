@@ -1,3 +1,6 @@
+require 'pry'
+require 'pry-byebug'
+
 class Player
   attr_reader :name, :move, :score
 
@@ -42,7 +45,8 @@ class Human < Player
       puts "Please choose rock(r), paper(p), scissors(sc), "\
            "spock(sp), or lizard(l):"
       choice = gets.chomp
-      break if Move::VALUES.include?(choice) || Move::ABRV.key?(choice)
+      break if Move::VALUES.include?(choice) ||
+               Move::VALUES.any? { |_k, v| v[:abrv] == choice }
       puts "Sorry, invalid choice."
     end
     self.move = Move.new(choice)
@@ -57,7 +61,7 @@ module Personalities
     end
 
     def choose
-      self.move = Move.new(Move::VALUES.sample)
+      self.move = Move.new(Move::VALUES.keys.sample)
     end
   end
 
@@ -68,7 +72,7 @@ module Personalities
     end
 
     def choose
-      self.move = Move.new(Move::VALUES[0])
+      self.move = Move.new(Move::VALUES.keys[0])
     end
   end
 
@@ -80,7 +84,7 @@ module Personalities
 
     def choose
       choice = [1, 3, 3, 3, 3, 3, 4, 4, 4].sample
-      self.move = Move.new(Move::VALUES[choice])
+      self.move = Move.new(Move::VALUES.keys[choice])
     end
   end
 
@@ -92,7 +96,7 @@ module Personalities
 
     def choose
       choice = [0, 2].sample
-      self.move = Move.new(Move::VALUES[choice])
+      self.move = Move.new(Move::VALUES.keys[choice])
     end
   end
 end
@@ -100,34 +104,26 @@ end
 class Move
   attr_reader :value
 
-  VALUES = ['rock', 'paper', 'scissors', 'spock', 'lizard']
-
-  ABRV = { 'r' => 'rock',
-           'p' => 'paper',
-           'sc' => 'scissors',
-           'sp' => 'spock',
-           'l' => 'lizard' }
-
-  DEFEATS = { 'rock' => ['lizard', 'scissors'],
-              'paper' => ['rock', 'spock'],
-              'scissors' => ['lizard', 'paper'],
-              'spock' => ['rock', 'scissors'],
-              'lizard' => ['spock', 'paper'] }
+  VALUES = { 'rock' => { abrv: 'r', beats: ['lizard', 'scissors'] },
+             'paper' => { abrv: 'p', beats: ['rock', 'spock'] },
+             'scissors' => { abrv: 'sc', beats: ['lizard', 'paper'] },
+             'spock' => { abrv: 'sp', beats: ['rock', 'scissors'] },
+             'lizard' => { abrv: 'l', beats: ['spock', 'paper'] } }
 
   def initialize(value)
-    @value = if Move::VALUES.include?(value)
+    @value = if Move::VALUES.key?(value)
                value
              else
-               Move::ABRV[value]
+               abrv_to_move(value)
              end
   end
 
   def >(other_move)
-    Move::DEFEATS[value].include?(other_move.value)
+    Move::VALUES[value][:beats].include?(other_move.value)
   end
 
-  def <(other_move)
-    Move::DEFEATS[other_move.value].include?(value)
+  def abrv_to_move(value)
+    Move::VALUES.select { |_k, stats| stats[:abrv] == value }.keys.first
   end
 
   def to_s
@@ -230,7 +226,7 @@ module Scoreable
   def detect_round_winner
     if human.move > computer.move
       human
-    elsif human.move < computer.move
+    elsif computer.move > human.move
       computer
     end
   end
@@ -268,6 +264,11 @@ module Chooseable
     return if choice == @valid_personality_choices.last
     self.computer = RPSGame::BOT_POOL[choice - 1]
   end
+
+  def show_match_log?
+    puts "Would you like to see the log for this match? (y/n)"
+    user_choice?
+  end
 end
 
 class MatchLog
@@ -298,7 +299,7 @@ class MatchLog
     rounds = log_arr.size
     (0...rounds).each do |round|
       system 'clear'
-      puts "***** Match #{match_number} *****\nRound #{round + 1}:\n" \
+      puts "***** Match : #{match_number} *****\nRound #{round + 1}:\n" \
            "#{@human_name} played #{log_arr[round].first}\n" \
            "#{@computer_name} played #{log_arr[round].last}\n"
       next if round == rounds - 1
@@ -360,6 +361,7 @@ class RPSGame
     display_scores
     display_overall_winner
     save_match_log
+    @match_log.print('Previous') if show_match_log?
   end
 
   def play
