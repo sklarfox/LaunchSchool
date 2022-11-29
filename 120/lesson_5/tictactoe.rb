@@ -85,10 +85,20 @@ class Square
 end
 
 class Player
-  attr_reader :marker
+  attr_reader :marker, :score, :name
 
   def initialize(marker)
+    @name = 'balls'
     @marker = marker
+    @score = 0
+  end
+
+  def increment_score
+    @score += 1
+  end
+
+  def reset_score
+    @score = 0
   end
 end
 
@@ -96,12 +106,18 @@ class TTTGame
   HUMAN_MARKER = 'X'
   COMPUTER_MARKER = 'O'
   FIRST_TO_MOVE = HUMAN_MARKER
+  POINTS_TO_WIN = 1
   attr_reader :board, :human, :computer
 
   def play
     clear
     display_welcome_message
-    main_game
+    loop do
+      main_game
+      break unless play_again?
+      reset_main_game
+      display_play_again_message
+    end
     display_goodbye_message
   end
 
@@ -118,15 +134,39 @@ class TTTGame
     set_first_player
     loop do
       display_board
-      player_move
+      play_until_winner
       display_result
-      break unless play_again?
-      reset
-      display_play_again_message
+      increment_winner_score
+      break if overall_winner?
+      reset_match
+    end
+    display_result
+    display_overall_winner
+  end
+
+  def reset_main_game
+    human.reset_score
+    computer.reset_score
+    reset_match
+    clear
+  end
+
+  def display_overall_winner
+    case detect_overall_winner
+    when HUMAN_MARKER then puts "You are the overall winner, congratulations!"
+    when COMPUTER_MARKER then puts "The computer is the overall winner. Better luck next time!"
     end
   end
 
-  def player_move
+  def increment_winner_score
+    if board.winning_marker == HUMAN_MARKER
+      human.increment_score
+    else
+      computer.increment_score
+    end
+  end
+
+  def play_until_winner
     loop do
       current_player_moves
       break if board.someone_won? || board.full?
@@ -142,6 +182,18 @@ class TTTGame
 
   def display_goodbye_message
     puts "Thank you for playing Tic-Tac-Toe! Goodbye!"
+  end
+
+  def overall_winner?
+    human.score == POINTS_TO_WIN || computer.score == POINTS_TO_WIN
+  end
+
+  def detect_overall_winner
+    if human.score == POINTS_TO_WIN
+      HUMAN_MARKER
+    else
+      COMPUTER_MARKER
+    end
   end
 
   def human_moves
@@ -165,12 +217,13 @@ class TTTGame
 
     case board.winning_marker
     when HUMAN_MARKER
-      puts "You won!"
+      puts "You won the round!"
     when COMPUTER_MARKER
-      puts "The computer won!"
+      puts "The computer won the round!"
     else
       puts "It's a tie!"
     end
+    sleep 1.25
   end
 
   def clear_screen_and_display_board
@@ -178,8 +231,12 @@ class TTTGame
     display_board
   end
 
+  def display_scores
+    puts "Human (#{human.marker}): #{human.score} | Computer (#{computer.marker}): #{computer.score}"
+  end
+
   def display_board
-    puts "You're a #{human.marker}. Computer is a #{computer.marker}.\n\n"
+    display_scores
     board.draw
     puts ""
   end
@@ -200,12 +257,13 @@ class TTTGame
     system 'clear'
   end
 
-  def reset
+  def reset_match
     board.reset
     clear
   end
 
   def display_play_again_message
+    clear
     puts "Let's play again!\n\n"
   end
 
