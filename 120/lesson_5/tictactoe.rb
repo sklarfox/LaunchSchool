@@ -145,7 +145,7 @@ class TTTGame
   end
 
   def human_moves
-    print "Choose a square (#{board.unmarked_keys.join(', ')}): "
+    print "Choose a square (#{joinor(board.unmarked_keys)}): "
     square = nil
     loop do
       square = gets.chomp.to_i
@@ -229,6 +229,20 @@ class TTTGame
     puts "The human will go first."
     # TODO: Allow choice of first player
     @current_player = human
+  end
+
+  def joinor(items, delimiter=', ', word='or')
+    case items.size
+    when 0
+      ''
+    when 1
+      items.first
+    when 2
+      items.join(" #{word} ")
+    else
+      final_item = items.pop.to_s
+      "#{items.join(delimiter)}#{delimiter}#{word} #{final_item}"
+    end
   end
 end
 
