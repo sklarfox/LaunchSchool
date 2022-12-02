@@ -1,6 +1,4 @@
 =begin
- A circular queue is a collection of objects
-
 
  Nouns:
   Circular queue
@@ -27,22 +25,37 @@ class QueueObject
 end
 
 class CircularQueue
+  attr_accessor :buffer, :enqueue_cursor
+
   def initialize(buffer_size)
     @buffer = Array.new(buffer_size)
-    binding.pry
+    @enqueue_cursor = 0
   end
 
-  def enqueue(element)
-
+  def enqueue(data)
+    # TODO PEDAC?
   end
 
   def dequeue
-
+    # TODO
   end
 
   private
 
-  def oldest_object
+  def reset_enqueue_cursor
+    if full?
+      self.enqueue_cursor = oldest_object_index
+    else
+      self.enqueue_cursor = oldest_object_index + 1
+    end
+    self.enqueue_cursor = 0 if self.enqueue_cursor >= self.buffer.size
+  end
+
+  def full?
+    !@buffer.any?(nil)
+  end
+
+  def oldest_object_index
     @buffer.min { |a, b| a.ranking <=> b.ranking }
   end
 
@@ -54,6 +67,6 @@ end
 queue = CircularQueue.new(3)
 # puts queue.dequeue == nil
 
-# queue.enqueue(1)
-# queue.enqueue(2)
+queue.enqueue(1)
+queue.enqueue(2)
 # puts queue.dequeue == 1
