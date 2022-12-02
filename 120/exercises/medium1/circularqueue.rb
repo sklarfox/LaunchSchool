@@ -29,7 +29,7 @@ class CircularQueue
 
   def initialize(buffer_size)
     @buffer = Array.new(buffer_size)
-    @enqueue_cursor = 0
+    @enqueue_cursor = 0asdf
   end
 
   def enqueue(data)
