@@ -75,31 +75,52 @@ class PokerHand
 
   private
 
+  attr_reader :hand
+
   def royal_flush?
+    # hand.count { |card| card.rank == 'Ace' } == 1 &&
+    # hand.count { |card| card.rank == 'King' } == 1 &&
+    # hand.count { |card| card.rank == 'Queen' } == 1 &&
+    # hand.count { |card| card.rank == 'Jack' } == 1 &&
+    # hand.count { |card| card.rank == 10 } == 1 &&
+    # hand.count { |card| card.suit == hand[0].suit} == 5
+
+    # ideal
+    straight_flush? && hand.max.rank
   end
 
   def straight_flush?
+    straight? && flush?
   end
 
   def four_of_a_kind?
+
   end
 
   def full_house?
   end
 
   def flush?
+    hand.count { |card| card.suit == hand.first.suit} == 5
   end
 
   def straight?
   end
 
   def three_of_a_kind?
+
   end
 
   def two_pair?
+    
   end
 
   def pair?
+    unique_values.size == 4
+  end
+
+  def unique_values
+    hand.map(&:rank).uniq
   end
 end
 
