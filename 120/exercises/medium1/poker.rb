@@ -1,5 +1,9 @@
+require 'pry'
+require 'pry-byebug'
+
 class Card
-  VALUES = {'Jack' => 10, 'Queen' => 10, 'King' => 10, 'Ace' => 11 }
+  VALUES = { 'Jack' => 11, 'Queen' => 12, 'King' => 13, 'Ace' => 14 }
+  ORDER = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace']
 
   attr_reader :rank, :suit
 
@@ -51,7 +55,7 @@ end
 class PokerHand
   def initialize(deck)
     @hand = []
-    5.times {@hand << deck.draw }
+    5.times { @hand << deck.draw }
   end
 
   def print
@@ -78,15 +82,7 @@ class PokerHand
   attr_reader :hand
 
   def royal_flush?
-    # hand.count { |card| card.rank == 'Ace' } == 1 &&
-    # hand.count { |card| card.rank == 'King' } == 1 &&
-    # hand.count { |card| card.rank == 'Queen' } == 1 &&
-    # hand.count { |card| card.rank == 'Jack' } == 1 &&
-    # hand.count { |card| card.rank == 10 } == 1 &&
-    # hand.count { |card| card.suit == hand[0].suit} == 5
-
-    # ideal
-    straight_flush? && hand.max.rank
+    straight_flush? && hand.max.rank == 'Ace'
   end
 
   def straight_flush?
@@ -94,10 +90,11 @@ class PokerHand
   end
 
   def four_of_a_kind?
-
+    card_rank_counts.include?(4)
   end
 
   def full_house?
+    card_rank_counts.include?(3) && card_rank_counts.include?(2)
   end
 
   def flush?
@@ -105,22 +102,29 @@ class PokerHand
   end
 
   def straight?
+    # binding.pry
+    Card::ORDER.index(hand.max.rank) - Card::ORDER.index(hand.min.rank) == 4 &&
+    card_rank_counts.all?(1)
   end
 
   def three_of_a_kind?
-
+    card_rank_counts.max == 3
   end
 
   def two_pair?
-    
+    card_rank_counts.count(2) == 2
   end
 
   def pair?
-    unique_values.size == 4
+    card_rank_counts.count(2) == 1
   end
 
-  def unique_values
-    hand.map(&:rank).uniq
+  def card_rank_counts
+    card_ranks = Hash.new(0)
+    hand.each do |card|
+      card_ranks[card.rank] += 1
+    end
+    card_ranks.values
   end
 end
 
@@ -136,12 +140,24 @@ end
 
 # Test that we can identify each PokerHand type.
 hand = PokerHand.new([
+  Card.new('Queen', 'Clubs'),
+  Card.new('King',  'Diamonds'),
+  Card.new(10,      'Clubs'),
+  Card.new('Ace',   'Hearts'),
+  Card.new('Jack',  'Clubs')
+])
+print  "Straight2: "
+puts hand.evaluate == 'Straight'
+
+
+hand = PokerHand.new([
   Card.new(10,      'Hearts'),
   Card.new('Ace',   'Hearts'),
   Card.new('Queen', 'Hearts'),
   Card.new('King',  'Hearts'),
   Card.new('Jack',  'Hearts')
 ])
+print  "Royal flush: "
 puts hand.evaluate == 'Royal flush'
 
 hand = PokerHand.new([
@@ -151,6 +167,7 @@ hand = PokerHand.new([
   Card.new(10,      'Clubs'),
   Card.new('Jack',  'Clubs')
 ])
+print  "Straight flush: "
 puts hand.evaluate == 'Straight flush'
 
 hand = PokerHand.new([
@@ -160,6 +177,7 @@ hand = PokerHand.new([
   Card.new(3, 'Spades'),
   Card.new(3, 'Diamonds')
 ])
+print  "Four of a kind: "
 puts hand.evaluate == 'Four of a kind'
 
 hand = PokerHand.new([
@@ -169,6 +187,7 @@ hand = PokerHand.new([
   Card.new(3, 'Spades'),
   Card.new(5, 'Hearts')
 ])
+print  "Full house: "
 puts hand.evaluate == 'Full house'
 
 hand = PokerHand.new([
@@ -178,6 +197,7 @@ hand = PokerHand.new([
   Card.new('King', 'Hearts'),
   Card.new(3, 'Hearts')
 ])
+print  "Flush: "
 puts hand.evaluate == 'Flush'
 
 hand = PokerHand.new([
@@ -187,6 +207,7 @@ hand = PokerHand.new([
   Card.new(7,      'Hearts'),
   Card.new('Jack', 'Clubs')
 ])
+print  "Straight: "
 puts hand.evaluate == 'Straight'
 
 hand = PokerHand.new([
@@ -196,6 +217,7 @@ hand = PokerHand.new([
   Card.new('Ace',   'Hearts'),
   Card.new('Jack',  'Clubs')
 ])
+print  "Straight2: "
 puts hand.evaluate == 'Straight'
 
 hand = PokerHand.new([
@@ -205,6 +227,7 @@ hand = PokerHand.new([
   Card.new(3, 'Spades'),
   Card.new(6, 'Diamonds')
 ])
+print  "Three of a kind: "
 puts hand.evaluate == 'Three of a kind'
 
 hand = PokerHand.new([
@@ -214,6 +237,7 @@ hand = PokerHand.new([
   Card.new(8, 'Spades'),
   Card.new(5, 'Hearts')
 ])
+print  "Two pair: "
 puts hand.evaluate == 'Two pair'
 
 hand = PokerHand.new([
@@ -223,6 +247,7 @@ hand = PokerHand.new([
   Card.new(9, 'Spades'),
   Card.new(3, 'Diamonds')
 ])
+print  "pair: "
 puts hand.evaluate == 'Pair'
 
 hand = PokerHand.new([
@@ -232,4 +257,5 @@ hand = PokerHand.new([
   Card.new(9,      'Spades'),
   Card.new(3,      'Diamonds')
 ])
+print  "High card: "
 puts hand.evaluate == 'High card'
