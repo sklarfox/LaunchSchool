@@ -17,8 +17,8 @@ class QueueObject
 
   attr_reader :ranking, :data, :buffer
 
-  def initialize(datatron2000)
-    @data = datatron2000
+  def initialize(data)
+    @data = data
     @ranking = @@number_of_queue_objects
     @@number_of_queue_objects += 1
   end
