@@ -28,19 +28,27 @@ class CircularQueue
   end
 
   def enqueue(int)
-    self.enqueue_cursor = 0 if enqueue_cursor > (buffer.size - 1)
-    self.dequeue_cursor += 1 if buffer[enqueue_cursor] != nil
-    self.dequeue_cursor = 0 if dequeue_cursor > (buffer.size - 1)
+    increment_dequeue unless buffer[enqueue_cursor] == nil
     buffer[enqueue_cursor] = int
-    self.enqueue_cursor += 1
+    increment_enqueue
+
   end
 
   def dequeue
     obj = buffer[dequeue_cursor]
     buffer[dequeue_cursor] = nil
-    self.dequeue_cursor += 1 unless obj == nil
-    self.dequeue_cursor = 0 if dequeue_cursor > (buffer.size - 1)
+    increment_dequeue unless obj == nil
     obj
+  end
+
+  def increment_enqueue
+    self.enqueue_cursor += 1
+    self.enqueue_cursor = 0 if enqueue_cursor > (buffer.size - 1)
+  end
+
+  def increment_dequeue
+    self.dequeue_cursor += 1
+    self.dequeue_cursor = 0 if dequeue_cursor > (buffer.size - 1)
   end
 end
 
