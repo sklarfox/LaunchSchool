@@ -50,7 +50,44 @@ class TodoList
     @todos = []
   end
 
-  # rest of class needs implementation
+  def add(todo)
+    raise TypeError.new "Can only add Todo objects" if todo.class != Todo
+    @todos << todo
+  end
+
+  alias << add
+
+  def size
+    @todos.size
+  end
+
+  def first
+    @todos.first.to_s
+  end
+
+  def last
+    @todos.last.to_s
+  end
+
+  def to_a
+    @todos.map {|todo| todo.to_s }
+  end
+
+  def done?
+    @todos.all? { |item| item.done? == true }
+  end
+
+  def item_at(idx)
+    @todos.fetch(idx)
+  end
+
+  def mark_done_at(idx)
+    item_at(idx).done!
+  end
+
+  def mark_undone_at(idx)
+    item_at(idx).undone!
+  end
 
 end
 
@@ -68,47 +105,48 @@ list = TodoList.new("Today's Todos")
 list.add(todo1)                 # adds todo1 to end of list, returns list
 list.add(todo2)                 # adds todo2 to end of list, returns list
 list.add(todo3)                 # adds todo3 to end of list, returns list
-list.add(1)                     # raises TypeError with message "Can only add Todo objects"
+# list.add(1)                     # raises TypeError with message "Can only add Todo objects"
 
 # <<
 # same behavior as add
 
 # ---- Interrogating the list -----
 
-# size
-list.size                       # returns 3
+# # size
+# p list.size                       # returns 3
 
-# first
-list.first                      # returns todo1, which is the first item in the list
+# # first
+# p list.first                      # returns todo1, which is the first item in the list
 
-# last
-list.last                       # returns todo3, which is the last item in the list
+# # last
+# p list.last                       # returns todo3, which is the last item in the list
 
-#to_a
-list.to_a                      # returns an array of all items in the list
+# #to_a
+# p list.to_a                      # returns an array of all items in the list
 
-#done?
-list.done?                     # returns true if all todos in the list are done, otherwise false
+# #done?
+# p list.done?                     # returns true if all todos in the list are done, otherwise false
 
 # ---- Retrieving an item in the list ----
 
 # item_at
-list.item_at                    # raises ArgumentError
-list.item_at(1)                 # returns 2nd item in list (zero based index)
-list.item_at(100)               # raises IndexError
+# puts list.item_at                    # raises ArgumentError
+# puts list.item_at(1)                 # returns 2nd item in list (zero based index)
+# puts list.item_at(100)               # raises IndexError
 
 # ---- Marking items in the list -----
 
 # mark_done_at
-list.mark_done_at               # raises ArgumentError
-list.mark_done_at(1)            # marks the 2nd item as done
-list.mark_done_at(100)          # raises IndexError
+# list.mark_done_at               # raises ArgumentError
+# list.mark_done_at(1)            # marks the 2nd item as done
+# list.mark_done_at(100)          # raises IndexError
 
 # mark_undone_at
-list.mark_undone_at             # raises ArgumentError
+# list.mark_undone_at             # raises ArgumentError
 list.mark_undone_at(1)          # marks the 2nd item as not done,
-list.mark_undone_at(100)        # raises IndexError
+# list.mark_undone_at(100)        # raises IndexError
 
+=begin
 # done!
 list.done!                      # marks all items as done
 
@@ -141,3 +179,4 @@ list.to_s                      # returns string representation of the list
 # [ ] Buy milk
 # [X] Clean room
 # [ ] Go to gym
+=end
