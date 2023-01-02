@@ -107,21 +107,50 @@ class TodoList
   end
 
   def to_s
-    string = "----- Today's Todos ----\n"
+    string = "----- #{title} ----\n"
     @todos.each {|todo| string << (todo.to_s + "\n")}
     string
   end
 
   def each
     @todos.each { |todo| yield(todo) }
+    self
   end
 
   def select
-    result = []
+    result = TodoList.new(title)
     each do |todo|
       result << todo if yield(todo)
     end
     result
+  end
+
+  def find_by_title(string)
+    select { |todo| todo.title == string }.first
+  end
+
+  def all_done
+    select { |todo| todo.done? }
+  end
+
+  def all_not_done
+    select { |todo| !todo.done?}
+  end
+
+  def mark_done(string)
+    each do |todo|
+      next unless todo.title == string
+      todo.done!
+      break
+    end
+  end
+
+  def mark_all_done
+    each { |todo| todo.done! }
+  end
+
+  def mark_all_undone
+    each { |todo| todo.undone! }
   end
 end
 
@@ -134,8 +163,9 @@ list.add(todo1)
 list.add(todo2)
 list.add(todo3)
 
-todo1.done!
+list.mark_all_done
+puts list
 
-results = list.select { |todo| todo.done? }    # you need to implement this method
+list.mark_all_undone
+puts list
 
-puts results.inspect
