@@ -62,15 +62,15 @@ class TodoList
   end
 
   def first
-    @todos.first.to_s
+    @todos.first
   end
 
   def last
-    @todos.last.to_s
+    @todos.last
   end
 
   def to_a
-    @todos.map {|todo| todo.to_s }
+    @todos
   end
 
   def done?
@@ -107,8 +107,7 @@ class TodoList
   end
 
   def to_s
-    string = "----- #{title} ----\n"
-    @todos.each {|todo| string << (todo.to_s + "\n")}
+    string = "---- #{title} ----\n" + "#{@todos.join("\n")}"
     string
   end
 
