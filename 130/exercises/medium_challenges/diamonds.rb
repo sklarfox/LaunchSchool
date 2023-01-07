@@ -60,31 +60,29 @@ class Diamond
   def self.make_diamond(target_char)
     return "A\n" if target_char == 'A'
 
-    distance_to_middle = target_char.ord - 64
     width = (target_char.ord - 66) * 2 + 3
-    middle_gap = 1
+    row_chars = ('A'..target_char).to_a
     result = []
 
-    ('A'..target_char).to_a.each do |char|
-      next if char == target_char
-      if char == "A"
-        result << char.center(width) + "\n"
-      else
-        result  << (char + (' ' * middle_gap) + char).center(width) + "\n"
-        middle_gap += 2
-      end
+    row_chars[0..-2].each do |char|
+      result << generate_row(char, width)
     end
 
-    ('A'..target_char).to_a.reverse.each do |char|
-      if char == "A"
-        result << char.center(width) + "\n"
-      else
-        result  << (char + (' ' * middle_gap) + char).center(width) + "\n"
-        middle_gap -= 2
-      end
+    row_chars.reverse.each do |char|
+      result << generate_row(char, width)
     end
 
     result.join
+  end
+
+  def self.generate_row(char, width)
+    return 'A'.center(width) + "\n" if char == 'A'
+    "#{char}#{generate_spacer(char)}#{char}".center(width) + "\n"
+  end
+
+  def self.generate_spacer(char)
+    return '' if char == 'A'
+    return ' ' * ((char.ord - 66) * 2 + 1)
   end
 end
 
