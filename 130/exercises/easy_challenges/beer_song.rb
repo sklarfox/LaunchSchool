@@ -41,12 +41,16 @@ class BeerSong
   PLURAL[1] = 'bottle'
 
   def self.verse(num)
-    unless num == 1
+    case num
+    when 1
       "#{num} #{PLURAL[num]} of beer on the wall, #{num} #{PLURAL[num]} of beer.\n" \
-      "Take one down and pass it around, #{num - 1} #{PLURAL[num - 1]} of beer on the wall.\n"
+      "Take it down and pass it around, no more #{PLURAL[num - 1]} of beer on the wall.\n"
+    when 0
+      "No more bottles of beer on the wall, no more bottles of beer.\n" \
+      "Go to the store and buy some more, 99 bottles of beer on the wall.\n"
     else
       "#{num} #{PLURAL[num]} of beer on the wall, #{num} #{PLURAL[num]} of beer.\n" \
-      "Take one down and pass it around, no more #{PLURAL[num - 1]} of beer on the wall.\n"
+      "Take one down and pass it around, #{num - 1} #{PLURAL[num - 1]} of beer on the wall.\n"
     end
   end
 
@@ -55,10 +59,10 @@ class BeerSong
     high.downto(low).each do |num|
       result << verse(num)
     end
-    result.join("\n\n")
+    result.join("\n")
   end
 
   def self.lyrics
-
+    verses(99, 0)
   end
 end
