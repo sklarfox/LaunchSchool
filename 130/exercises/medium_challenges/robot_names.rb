@@ -42,3 +42,34 @@
       add the name ot the log of used names
 =end
 
+class Robot
+  @@used_names = Array.new
+  attr_reader :name
+
+  def initialize
+    reset
+  end
+
+  def reset
+    candidate_name = nil
+
+    loop do
+      candidate_name = generate_random_name
+      break unless @@used_names.include?(candidate_name)
+    end
+
+    @name = candidate_name
+    @@used_names << candidate_name
+  end
+
+  private
+
+  attr_writer :name
+
+  def generate_random_name
+    new_name = ''
+    2.times { new_name << ('A'..'Z').to_a.sample }
+    3.times { new_name << (0..9).to_a.sample.to_s }
+    new_name
+  end
+end
