@@ -67,7 +67,7 @@ class Clock
   MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY
   
   def self.at(hours, minutes=0)
-    Clock.new(hours, minutes)
+    new(hours, minutes)
   end
 
   def initialize(hours, minutes)
@@ -101,7 +101,7 @@ class Clock
   end
 
   def to_s
-    "#{format('%02d', @time.first)}:#{format('%02d', @time.last)}"
+    format('%02d:%02d', @time.first, @time.last)
   end
 
   protected
